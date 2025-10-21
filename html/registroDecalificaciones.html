@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Calificaciones - Sistema de Gestión Académica</title>
+    <link rel="stylesheet" href="/css/paginas/estilo-tabla.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container dashboard">
+        
+        <header class="dashboard-header">
+            <div class="header-info">
+                <h1>Universidad Nacional</h1>
+                <h2>Sistema de Gestión Académica</h2>
+            </div>
+            <div class="user-info">
+                <span>Cargando...</span> 
+                <span>Código: ...</span> 
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </header>
+
+        <nav class="breadcrumb">
+            <a href="/html/panel-catedratico.html" class="btn-link">
+                <i class="fas fa-arrow-left"></i>
+                &nbsp;Volver a Selección de Clase
+            </a>
+        </nav>
+        <main class="dashboard-main">
+            
+            <section class="clase-info-detalle">
+                <div class="info-grid">
+                    <div class="info-item-detalle">
+                        <strong>Cargando...</strong>
+                        <span>...</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="resumen-estudiantes">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-total">0</div>
+                        <div class="stat-label">Total Estudiantes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-aprobados">0</div>
+                        <div class="stat-label">Aprobados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-reprobados">0</div>
+                        <div class="stat-label">Reprobados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-pendientes">0</div>
+                        <div class="stat-label">Pendientes</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="registro-calificaciones">
+                
+                <div class="table-container">
+                    <table class="calificaciones-table">
+                        <thead>
+                            <tr>
+                                <th>Carnet</th>
+                                <th>Nombre del Estudiante</th>
+                                <th>Sist. 1 <small>(15pts)</small></th>
+                                <th>Sist. 2 <small>(15pts)</small></th>
+                                <th>Sist. 3 <small>(15pts)</small></th>
+                                <th>Sist. 4 <small>(15pts)</small></th>
+                                <th>Examen <small>(40pts)</small></th>
+                                <th>Total <small>(100pts)</small></th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="9" style="text-align: center; padding: 2rem;">
+                                    Cargando lista de estudiantes...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="calificaciones-cards-container" >
+                    </div>
+                
+                <div class="action-buttons">
+                    <button class="btn-secondary" onclick="imprimirActa()">Imprimir Acta</button>
+                    <button class="btn-primary" onclick="guardarCalificaciones()">Guardar Calificaciones</button>
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+    <script src="/js/datos-catedraticos.js"></script>
+    <script src="/js/calificaciones.js"></script>
+</body>
+</html>

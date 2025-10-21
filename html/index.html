@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universidad Nacional</title>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Krub:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Sans+Linear+B&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/paginas/login.css">
+</head>
+<body>
+    <div class="contenedor">
+        <header>
+            <div class="logo-universidad">
+                <img src="/img/Gemini_Generated_Image_6kuwqf6kuwqf6kuw-removebg-preview.png" alt="Logo Universidad Nacional">
+            </div>
+            <h1>Universidad Nacional</h1>
+            <h2>Sistema de Gestión Académica</h2>
+            <h3>Seleccione el tipo de acceso para continuar</h3>
+        </header>
+
+        <main>
+            <!-- Card de login catedráticos -->
+            <section class="card card-catedraticos">
+                <div class="card-icono">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M4.5 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM14.25 8.625a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0zM1.5 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM17.25 19.128l-.001.144a2.25 2.25 0 01-.233.96 10.088 10.088 0 005.06-1.01.75.75 0 00.42-.643 4.875 4.875 0 00-6.957-4.611 8.586 8.586 0 011.71 5.157v.003z" />
+                    </svg>
+                </div>
+                <h3>Acceso Catedráticos</h3>
+                <p class="card-descripcion">Gestión de calificaciones, horarios y seguimiento académico de estudiantes</p>
+                <ul>
+                    <li>Administrar listas de estudiantes</li>
+                    <li>Registrar calificaciones</li>
+                    <li>Generar actas académicas</li>
+                </ul>
+                <a href="/html/login-catedratico.html" class="btn btn-catedraticos">Iniciar Sesión como Catedrático</a>
+            </section>
+
+            <!-- Card de login Estudiantes -->
+            <section class="card card-estudiantes">
+                <div class="card-icono">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M11.7 2.805a.75.75 0 01.6 0A60.65 60.65 0 0122.83 8.72a.75.75 0 01-.231 1.337 49.949 49.949 0 00-9.902 3.912l-.003.002-.34.18a.75.75 0 01-.707 0A50.009 50.009 0 007.5 12.174v-.224c0-.131.067-.248.172-.311a54.614 54.614 0 014.653-2.52.75.75 0 00-.65-1.352 56.129 56.129 0 00-4.78 2.589 1.858 1.858 0 00-.859 1.228 49.803 49.803 0 00-4.634-1.527.75.75 0 01-.231-1.337A60.653 60.653 0 0111.7 2.805z" />
+                        <path d="M13.06 15.473a48.45 48.45 0 017.666-3.282c.134 1.414.22 2.843.255 4.285a.75.75 0 01-.46.71 47.878 47.878 0 00-8.105 4.342.75.75 0 01-.832 0 47.877 47.877 0 00-8.104-4.342.75.75 0 01-.461-.71c.035-1.442.121-2.87.255-4.286A48.4 48.4 0 016 13.18v1.27a1.5 1.5 0 00-.14 2.508c-.09.38-.222.753-.397 1.11.452.213.901.434 1.346.661a6.729 6.729 0 00.551-1.608 1.5 1.5 0 00.14-2.67v-.645a48.549 48.549 0 013.44 1.668 2.25 2.25 0 002.12 0z" />
+                        <path d="M4.462 19.462c.42-.419.753-.9.991-1.414-.114.042-.227.085-.34.128a.75.75 0 01-.833-.248c-.366-.408-.659-1.2-.659-2.108V15.5a48.45 48.45 0 00-1.091-.091c-.049-.713-.076-1.432-.076-2.154 0-.722.027-1.441.076-2.154a48.45 48.45 0 011.091-.09v1.27a2.25 2.25 0 01.659 2.108c0 .908-.293 1.7-.659 2.108a.75.75 0 00.833.248c.113-.043.227-.086.34-.128a3.818 3.818 0 01-.991 1.414z" />
+                    </svg>
+                </div>
+                <h3>Acceso Estudiantes</h3>
+                <p class="card-descripcion">Consulta de calificaciones, horarios y estado académico personal</p>
+                <ul>
+                    <li>Ver calificaciones actuales</li>
+                    <li>Consultar horarios de clases</li>
+                    <li>Revisar historial académico</li>
+                </ul>
+                <a href="/html/login-estudiante.html" class="btn btn-estudiantes">Consultar Calificaciones</a>
+            </section>
+        </main>
+
+        <footer>
+            <p>Sistema de Gestión Académica v2.0 • Universidad Nacional de Nicaragua</p>
+        </footer>
+    </div>
+</body>
+</html>

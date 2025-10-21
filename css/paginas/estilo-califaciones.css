@@ -1,0 +1,552 @@
+/* ===== VARIABLES CSS ===== */
+:root {
+    --primary-color: #155DFC;
+    --primary-light: #009EFF;
+    --secondary-color: #00A63E;
+    --secondary-light: #00C853;
+    --background-color: #F9FAFB;
+    --surface-color: #FFFFFF;
+    --text-primary: #1F2937;
+    --text-secondary: #6B7280;
+    --text-muted: #9CA3AF;
+    --border-color: #E5E7EB;
+    --border-radius: 12px;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== ESTILOS BASE ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.5;
+    color: var(--text-primary);
+    background: var(--background-color);
+    min-height: 100vh;
+    font-weight: 400;
+}
+
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== HEADER ===== */
+.dashboard-header {
+    background: var(--surface-color);
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.header-info h1 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+}
+
+.header-info h2 {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+    margin-top: 0.25rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.875rem;
+}
+
+.user-info span {
+    color: var(--text-secondary);
+    padding: 0.5rem 0.75rem;
+    background: var(--background-color);
+    border-radius: 8px;
+}
+
+.btn-logout {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.btn-logout:hover {
+    background: var(--background-color);
+    border-color: var(--text-secondary);
+}
+
+/* ===== CONTENIDO PRINCIPAL ===== */
+.dashboard-main {
+    flex: 1;
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* ===== SECCIÓN DE PERIODO ===== */
+.periodo-section {
+    background: var(--surface-color);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+}
+
+.periodo-section h2 {
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+}
+
+.periodo-section > p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.form-group {
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+}
+
+.form-group select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    background: var(--surface-color);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(21, 93, 252, 0.1);
+}
+
+/* ===== SECCIÓN DE INFORMACIÓN ===== */
+.info-section {
+    background: var(--surface-color);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+}
+
+.info-section h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+}
+
+.info-section ul {
+    list-style: none;
+}
+
+.info-section li {
+    padding: 0.5rem 0;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-section li:before {
+    content: "";
+    width: 4px;
+    height: 4px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* ===== SECCIÓN DE CLASE SELECCIONADA ===== */
+.clase-seleccionada {
+    background: var(--surface-color);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.clase-seleccionada h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+}
+
+.clase-preview {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 1.25rem;
+    background: var(--background-color);
+    border-radius: 8px;
+    border-left: 3px solid var(--primary-color);
+}
+
+.clase-info-preview h4 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.clase-info-preview p {
+    margin: 0.25rem 0;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+}
+
+.clase-info-preview strong {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* ===== BOTONES ===== */
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    min-width: 160px;
+    white-space: nowrap;
+}
+
+.btn-primary:hover {
+    background: var(--primary-light);
+    transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+    background: var(--text-muted);
+    cursor: not-allowed;
+    transform: none;
+}
+
+.action-buttons {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+/* ===== EFECTOS DE HOVER ===== */
+.periodo-section,
+.info-section,
+.clase-seleccionada {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.periodo-section:hover,
+.info-section:hover,
+.clase-seleccionada:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== DISEÑO RESPONSIVE ===== */
+
+/* Tablets */
+@media (max-width: 768px) {
+    .dashboard-header {
+        padding: 1.25rem;
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .header-info h1 {
+        font-size: 1.25rem;
+    }
+    
+    .user-info {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .dashboard-main {
+        padding: 1.5rem;
+    }
+    
+    .periodo-section,
+    .info-section,
+    .clase-seleccionada {
+        padding: 1.5rem;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .clase-preview {
+        flex-direction: column;
+        text-align: left;
+        gap: 1rem;
+    }
+    
+    .btn-primary {
+        width: 100%;
+        min-width: auto;
+    }
+}
+
+/* Móviles */
+@media (max-width: 480px) {
+    .dashboard-header {
+        padding: 1rem;
+    }
+    
+    .header-info h1 {
+        font-size: 1.125rem;
+    }
+    
+    .user-info {
+        flex-direction: column;
+        gap: 0.75rem;
+        width: 100%;
+    }
+    
+    .user-info span {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .btn-logout {
+        width: 100%;
+    }
+    
+    .dashboard-main {
+        padding: 1rem;
+    }
+    
+    .periodo-section,
+    .info-section,
+    .clase-seleccionada {
+        padding: 1.25rem;
+    }
+    
+    .clase-preview {
+        padding: 1rem;
+    }
+}
+
+/* Pantallas grandes */
+@media (min-width: 1200px) {
+    .dashboard-main {
+        max-width: 900px;
+    }
+}
+
+/* ===== MEJORAS DE ACCESIBILIDAD ===== */
+@media (prefers-reduced-motion: reduce) {
+    .btn-primary:hover,
+    .periodo-section:hover,
+    .info-section:hover,
+    .clase-seleccionada:hover {
+        transform: none;
+    }
+    
+    .clase-seleccionada {
+        animation: none;
+    }
+}
+
+.btn-primary:focus-visible,
+.btn-logout:focus-visible,
+.form-group select:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* ===== ESTADOS DE CARGA ===== */
+.btn-primary.loading {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-primary.loading:hover {
+    transform: none;
+}
+
+/* ===== UTILIDADES ===== */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ===== EFECTO DE PROFUNDIDAD SUTIL ===== */
+.dashboard-header {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+/* ===== TIPOGRAFÍA MEJORADA ===== */
+body {
+    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+
+
+/* ============================================= */
+/* ESTILOS PARA LA NUEVA LISTA DE CLASES         */
+/* (Añadir al final de estilo-califaciones.css)  */
+/* ============================================= */
+
+.lista-clases-section {
+    background: var(--surface-color);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.lista-clases-section h2 {
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.lista-clases-section > p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+}
+
+.clase-lista-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.clase-radio-card {
+    display: block; /* Permite que todo el label sea clickeable */
+    position: relative;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clase-radio-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Estilo cuando el radio está seleccionado */
+.clase-radio-card:has(input:checked) {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-color);
+    background-color: #f9faff;
+}
+
+.clase-radio-card input[type="radio"] {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    height: 1.25em;
+    width: 1.25em;
+    cursor: pointer;
+}
+
+.clase-radio-card h4 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding-right: 2rem; /* Espacio para el botón de radio */
+}
+
+.clase-radio-card p {
+    margin: 0.25rem 0;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.clase-radio-card p strong {
+    color: var(--text-primary);
+    font-weight: 500;
+}

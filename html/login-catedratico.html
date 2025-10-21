@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Catedrático</title>
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/paginas/ligin-catedratico.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/paginas/ligin-catedratico.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="header">
+            <div class="icon-circle">
+                <i class="fas fa-book"></i> 
+            </div>
+            <h1>Universidad Nacional</h1>
+            <p class="subtitle">Sistema de Gestión Académica</p>
+        </div>
+
+        <form class="login-form" action="#" method="POST">
+            
+            <div class="input-group">
+                <label for="codigo">Código de Catedrático</label>
+                <div class="input-field">
+                    <i class="fas fa-user"></i> 
+                    <input type="text" id="codigo" name="codigo" placeholder="Ingrese su código" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Contraseña</label>
+                <div class="input-field">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" name="password" placeholder="Ingrese su contraseña" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary">
+                Iniciar Sesión
+            </button>
+            
+            <button type="button" class="btn-secondary">
+                <a href="/html/index.html">Volver al Menú Principal</a>
+            </button>
+        </form>
+        <script src="/js/login-catedratico.js"></script>
+    </div>
+</body>
+</html>

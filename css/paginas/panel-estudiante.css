@@ -1,0 +1,582 @@
+
+:root {
+    --primary-green: #28a745;
+    --light-green-bg: #e6ffe6;
+    --text-dark: #333;
+    --text-medium: #555;
+    --text-light: #777;
+    --border-light: #e0e0e0;
+    --bg-light: #f8f8f8;
+    --bg-white: #ffffff;
+    --status-approved: #28a745;
+    --status-reprobated: #dc3545;
+    --status-in-progress: #6c757d;
+    --metric-blue: #007bff;
+    --metric-green: #28a745;
+    --metric-orange: #ffc107;
+    --metric-purple: #6f42c1;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+}
+
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--bg-white);
+    padding: 15px 30px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.navbar-left, .navbar-right {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-left .logo {
+    background-color: var(--primary-green);
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    margin-right: 15px;
+}
+
+.portal-title {
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--text-dark);
+}
+
+.university-name {
+    font-size: 13px;
+    color: var(--text-light);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: var(--text-medium);
+    margin-right: 20px;
+}
+
+.user-info i {
+    font-size: 20px;
+    margin-right: 8px;
+    color: var(--text-light);
+}
+
+.user-info .carnet {
+    margin-left: 10px;
+    font-weight: normal;
+    color: var(--text-light);
+}
+
+.logout-btn {
+    background-color: transparent;
+    border: none;
+    color: var(--text-medium);
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+}
+
+.logout-btn:hover {
+    background-color: var(--bg-light);
+}
+
+.logout-btn i {
+    margin-right: 8px;
+    color: var(--text-light);
+}
+.content-area {
+    padding: 25px;
+    max-width: 1200px;
+    margin: 25px auto;
+    display: grid;
+    gap: 25px;
+    grid-template-columns: 1fr;
+}
+.info-personal-card {
+    background-color: var(--light-green-bg);
+    padding: 25px;
+    border-radius: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    align-items: center;
+}
+
+.info-personal-card .info-item {
+    text-align: left;
+}
+
+.info-personal-card .label {
+    display: block;
+    font-size: 13px;
+    color: var(--primary-green);
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.info-personal-card .value {
+    display: block;
+    font-size: 15px;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.info-personal-card .value.name {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.info-personal-card .value.carnet {
+    font-size: 14px;
+    color: var(--text-light);
+    font-weight: 400;
+}
+
+.info-personal-card .status {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.info-personal-card .status-active {
+    background-color: #d4edda;
+    color: var(--status-approved);
+}
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.metric-card {
+    background-color: var(--bg-white);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    text-align: left;
+}
+
+.metric-card .metric-icon {
+    font-size: 28px;
+    color: var(--metric-blue);
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.metric-card .metric-icon i {
+    font-size: 30px;
+    margin-right: 8px;
+}
+
+.metric-card .metric-icon.green { color: var(--metric-green); }
+.metric-card .metric-icon.orange { color: var(--metric-orange); }
+.metric-card .metric-icon.purple { color: var(--metric-purple); }
+
+
+.metric-card .metric-text {
+    font-size: 14px;
+    color: var(--text-medium);
+}
+.grades-section {
+    background-color: var(--bg-white);
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.grades-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.grades-header i {
+    font-size: 24px;
+    color: var(--text-medium);
+    margin-right: 10px;
+}
+
+.grades-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.grades-info {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+.grades-table-container {
+    overflow-x: auto;
+}
+
+.grades-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.grades-table th, .grades-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 14px;
+}
+
+.grades-table th {
+    background-color: var(--bg-light);
+    color: var(--text-medium);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 13px;
+}
+
+.grades-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.grades-table .subject-title {
+    display: block;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.grades-table .subject-schedule {
+    display: block;
+    font-size: 12px;
+    color: var(--text-light);
+}
+
+.grades-table .total-score {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.grades-table .total-score span {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.progress-bar-bg {
+    width: 80px;
+    height: 6px;
+    background-color: var(--border-light);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s ease-in-out;
+}
+
+.progress-bar.green { background-color: var(--status-approved); }
+.progress-bar.red { background-color: var(--status-reprobated); }
+.progress-bar.gray { background-color: var(--status-in-progress); }
+
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    gap: 5px;
+}
+
+.status-approved {
+    background-color: #d4edda;
+    color: var(--status-approved);
+}
+
+.status-reprobated {
+    background-color: #f8d7da;
+    color: var(--status-reprobated);
+}
+
+.status-in-progress {
+    background-color: #e2e3e5;
+    color: var(--status-in-progress);
+}
+.grades-cards-container {
+    display: none; 
+}
+
+@media (max-width: 991px) {
+    .navbar {
+        padding: 15px 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .navbar-left, .navbar-right {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+
+    .navbar-right {
+        margin-bottom: 0;
+    }
+
+    .user-info {
+        margin-right: 10px;
+        flex-direction: column;
+        text-align: right;
+        align-items: flex-end;
+    }
+    .user-info i {
+        display: none;
+    }
+    .user-info span:first-of-type {
+        margin-bottom: 3px;
+    }
+
+    .logout-btn {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+
+    .content-area {
+        padding: 20px;
+        gap: 20px;
+    }
+
+    .info-personal-card {
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .metrics-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .metric-card {
+        padding: 15px;
+    }
+    .grades-table-container {
+        display: none;
+    }
+    .grades-cards-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+
+@media (max-width: 767px) {
+    .navbar {
+        flex-direction: column;
+        padding: 10px 15px;
+        align-items: flex-start;
+    }
+
+    .navbar-left {
+        margin-bottom: 10px;
+        justify-content: flex-start;
+        width: auto;
+    }
+
+    .navbar-right {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+    
+    .user-info {
+        margin: 0 0 10px 0;
+        width: 100%;
+        text-align: left;
+        align-items: flex-start;
+        flex-direction: row;
+    }
+    .user-info i {
+        display: inline-block;
+        margin-right: 8px;
+    }
+    .user-info span {
+        font-size: 13px;
+    }
+    .user-info .carnet {
+        margin-left: 5px;
+    }
+
+    .logout-btn {
+        width: 100%;
+        justify-content: center;
+        margin-left: 0;
+    }
+
+    .content-area {
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .info-personal-card {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    .info-personal-card .info-item {
+        text-align: center;
+    }
+    .info-personal-card .value.name {
+        font-size: 16px;
+    }
+    .info-personal-card .value.carnet {
+        font-size: 13px;
+    }
+
+
+    .metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    .metric-card {
+        align-items: center;
+        text-align: center;
+    }
+    .metric-card .metric-icon {
+        font-size: 24px;
+        margin-bottom: 5px;
+    }
+    .metric-card .metric-icon i {
+        font-size: 26px;
+    }
+    .metric-card .metric-text {
+        font-size: 13px;
+    }
+
+    .grades-header h3 {
+        font-size: 18px;
+    }
+    .grades-info {
+        font-size: 12px;
+    }
+
+    
+    .grade-card {
+        background-color: var(--bg-white);
+        border: 1px solid var(--border-light);
+        border-left: 5px solid var(--primary-green);
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .grade-card .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .grade-card .subject-code {
+        font-weight: 600;
+        font-size: 16px;
+        color: var(--text-dark);
+    }
+
+    .grade-card .card-meta {
+        font-size: 13px;
+        color: var(--text-light);
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .grade-card .card-meta span {
+        margin-bottom: 3px;
+    }
+
+
+    .grade-card .card-details {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        gap: 10px;
+    }
+
+    .grade-card .card-details > div {
+        flex: 1;
+    }
+
+    .grade-card .detail-label {
+        display: block;
+        font-weight: 500;
+        font-size: 13px;
+        color: var(--text-medium);
+        margin-bottom: 5px;
+    }
+
+    .grade-card .detail-scores {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        font-size: 14px;
+        color: var(--text-dark);
+    }
+    
+    .grade-card .card-total {
+        margin-top: 15px;
+        border-top: 1px solid var(--border-light);
+        padding-top: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .grade-card .card-total span {
+        font-weight: 600;
+        font-size: 15px;
+        margin-bottom: 8px;
+    }
+    .grade-card .status-approved + .card-meta { border-left-color: var(--status-approved); }
+    .grade-card .status-reprobated + .card-meta { border-left-color: var(--status-reprobated); }
+    .grade-card .status-in-progress + .card-meta { border-left-color: var(--status-in-progress); }
+
+    .grade-card .status-approved { border-left-color: var(--status-approved); }
+    .grade-card .status-reprobated { border-left-color: var(--status-reprobated); }
+    .grade-card .status-in-progress { border-left-color: var(--status-in-progress); }
+    .grade-card {
+        border-left: 5px solid var(--primary-green);
+    }
+    .grade-card:has(.status-approved) { border-left-color: var(--status-approved); }
+    .grade-card:has(.status-reprobated) { border-left-color: var(--status-reprobated); }
+    .grade-card:has(.status-in-progress) { border-left-color: var(--status-in-progress); }
+}

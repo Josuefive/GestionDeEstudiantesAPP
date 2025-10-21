@@ -1,0 +1,269 @@
+:root {
+  --fuente: "Krub", sans-serif;
+  --color-catedratico: #155DFC;
+  --color-estudiante: #00A63E;
+  --color-de-fondo: #F9FAFB;
+  --color-texto: #333333;
+  --color-borde: #E5E7EB;
+  --color-hover-catedratico: #009EFF;
+  --color-hover-estudiante: #00C853;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-family: var(--fuente);
+  background-color: var(--color-de-fondo);
+  color: var(--color-texto);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.contenedor {
+  max-width: 1200px;
+  width: 100%;
+}
+
+/* Header */
+header {
+  text-align: center;
+  margin-bottom: 5rem;
+}
+
+.logo-universidad {
+  margin-bottom: 2rem;
+}
+
+.logo-universidad img {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  font-size: 3.2rem;
+  margin-bottom: 1rem;
+  color: #1a237e;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 2.4rem;
+  margin-bottom: 1rem;
+  color: #303f9f;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  color: #5c6bc0;
+  font-weight: 500;
+}
+
+/* Main */
+main {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3rem;
+  margin-bottom: 4rem;
+}
+
+.card {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 450px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+
+/* Efecto hover para catedráticos */
+.card-catedraticos:hover {
+  transform: translateY(-5px);
+  border-color: var(--color-hover-catedratico);
+  box-shadow: 0 8px 25px rgba(21, 93, 252, 0.2);
+}
+
+/* Efecto hover para estudiantes */
+.card-estudiantes:hover {
+  transform: translateY(-5px);
+  border-color: var(--color-hover-estudiante);
+  box-shadow: 0 8px 25px rgba(0, 166, 62, 0.2);
+}
+
+.card-catedraticos {
+  border-top: 5px solid var(--color-catedratico);
+}
+
+.card-estudiantes {
+  border-top: 5px solid var(--color-estudiante);
+}
+
+.card-icono {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+
+.card-catedraticos .card-icono {
+  background-color: rgba(21, 93, 252, 0.1);
+  color: var(--color-catedratico);
+}
+
+.card-estudiantes .card-icono {
+  background-color: rgba(0, 166, 62, 0.1);
+  color: var(--color-estudiante);
+}
+
+.card-icono svg {
+  width: 30px;
+  height: 30px;
+}
+
+.card h3 {
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.card-catedraticos h3 {
+  color: var(--color-catedratico);
+}
+
+.card-estudiantes h3 {
+  color: var(--color-estudiante);
+}
+
+.card-descripcion {
+  font-size: 1.6rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #666;
+  font-style: italic;
+}
+
+.card ul {
+  list-style-type: none;
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.card li {
+  margin-bottom: 1rem;
+  font-size: 1.6rem;
+  padding: 0.5rem 0;
+}
+
+.btn {
+  display: block;
+  text-align: center;
+  padding: 1.2rem 2rem;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.6rem;
+  transition: all 0.3s ease;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-catedraticos {
+  background-color: var(--color-catedratico);
+  color: white;
+}
+
+.btn-catedraticos:hover {
+  background-color: var(--color-hover-catedratico);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 158, 255, 0.3);
+}
+
+.btn-estudiantes {
+  background-color: var(--color-estudiante);
+  color: white;
+}
+
+.btn-estudiantes:hover {
+  background-color: var(--color-hover-estudiante);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3);
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 2rem 0;
+  border-top: 1px solid var(--color-borde);
+}
+
+footer p {
+  font-size: 1.4rem;
+  color: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  body {
+    padding: 1rem;
+  }
+  
+  h1 {
+    font-size: 2.8rem;
+  }
+  
+  h2 {
+    font-size: 2rem;
+  }
+  
+  h3 {
+    font-size: 1.6rem;
+  }
+  
+  .card {
+    padding: 2rem;
+  }
+  
+  .card h3 {
+    font-size: 2rem;
+  }
+  
+  .card-descripcion {
+    font-size: 1.4rem;
+  }
+  
+  .card li {
+    font-size: 1.4rem;
+  }
+  
+  .btn {
+    font-size: 1.4rem;
+    padding: 1rem 1.5rem;
+  }
+}
