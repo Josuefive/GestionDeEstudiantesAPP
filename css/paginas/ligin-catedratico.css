@@ -128,3 +128,17 @@ button {
     color: #333;
     border-color: #ccc;
 }
+
+/* --- Estilo para el mensaje de error --- */
+.error-message {
+    color: #a94442; 
+    background-color: #f2dede;
+    border: 1px solid #ebccd1;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 10px;
+
+    display: none; /* <-- ¡AÑADE ESTA LÍNEA! */
+}

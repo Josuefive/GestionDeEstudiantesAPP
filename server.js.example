@@ -1,0 +1,111 @@
+// --- Importar módulos ---
+const express = require('express');
+const { Pool } = require('pg'); // Driver de PostgreSQL
+const bcrypt = require('bcryptjs'); // Para hashear contraseñas
+const cors = require('cors'); // Para permitir peticiones
+
+// --- Configuración ---
+const app = express();
+const port = 3000; // Puedes usar cualquier puerto
+
+// --- Middlewares ---
+app.use(cors()); // Habilita CORS para todas las rutas
+app.use(express.json()); // Permite al servidor entender JSON
+
+// --- Configuración de la Base de Datos ---
+// ¡¡¡CAMBIA ESTOS DATOS POR LOS TUYOS!!!
+const pool = new Pool({
+  user: 'postgres',                 // <-- TU USUARIO DE POSTGRES (comúnmente 'postgres')
+  host: 'localhost',
+  database: 'sistema_academico',    // El nombre de tu BD (está correcto)
+  password: '',  // <-- TU CONTRASEÑA DE POSTGRES
+  port: 5432,                       // Puerto por defecto de Postgres
+});
+
+// --- Rutas (Endpoints) ---
+
+// Endpoint para el login de ESTUDIANTES
+app.post('/login-estudiante', async (req, res) => {
+  try {
+    const { carnet, password } = req.body;
+
+    // 1. Buscar al estudiante por carnet
+    const query = 'SELECT * FROM Estudiantes WHERE carnet = $1';
+    const result = await pool.query(query, [carnet]);
+
+    const estudiante = result.rows[0];
+
+    // 2. Si el estudiante no existe
+    if (!estudiante) {
+      return res.status(401).json({ success: false, message: 'Carnet o contraseña incorrectos.' });
+    }
+
+    // 3. Comparar la contraseña enviada con la guardada (hasheada)
+    const passwordValida = await bcrypt.compare(password, estudiante.password);
+
+    if (passwordValida) {
+      // ¡Login exitoso!
+      // No envíes la contraseña de vuelta, solo los datos necesarios
+      res.status(200).json({ 
+        success: true, 
+        message: 'Login exitoso', 
+        nombre: estudiante.nombre,
+        carnet: estudiante.carnet 
+      });
+    } else {
+      // Contraseña incorrecta
+      res.status(401).json({ success: false, message: 'Carnet o contraseña incorrectos.' });
+    }
+
+  } catch (error) {
+    console.error('Error en /login-estudiante:', error);
+    res.status(500).json({ success: false, message: 'Error interno del servidor.' });
+  }
+});
+
+// === AQUÍ ESTÁ EL ENDPOINT DE CATEDRÁTICOS COMPLETO ===
+app.post('/login-catedratico', async (req, res) => {
+  try {
+    const { codigo, password } = req.body;
+
+    // 1. Buscar al catedrático por código
+    const query = 'SELECT * FROM Catedraticos WHERE codigo = $1';
+    const result = await pool.query(query, [codigo]);
+
+    const catedratico = result.rows[0];
+
+    // 2. Si no existe
+    if (!catedratico) {
+      return res.status(401).json({ success: false, message: 'Código o contraseña incorrectos.' });
+    }
+
+    // 3. Comparar la contraseña
+    const passwordValida = await bcrypt.compare(password, catedratico.password);
+
+    if (passwordValida) {
+      // ¡Login exitoso!
+      // Enviamos un objeto 'catedratico' para guardarlo en localStorage
+      res.status(200).json({ 
+        success: true, 
+        message: 'Login exitoso', 
+        catedratico: {
+            nombre: catedratico.nombre,
+            codigo: catedratico.codigo
+        }
+      });
+    } else {
+      // Contraseña incorrecta
+      res.status(401).json({ success: false, message: 'Código o contraseña incorrectos.' });
+    }
+
+  } catch (error) {
+    console.error('Error en /login-catedratico:', error);
+    res.status(500).json({ success: false, message: 'Error interno del servidor.' });
+  }
+});
+
+
+// --- Iniciar el servidor ---
+app.listen(port, () => {
+  console.log(`Servidor corriendo en http://localhost:${port}`);
+});

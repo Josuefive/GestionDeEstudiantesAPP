@@ -19,23 +19,26 @@
             <p class="subtitle">Sistema de Gestión Académica</p>
         </div>
 
-        <form class="login-form" action="#" method="POST">
-            
-            <div class="input-group">
-                <label for="codigo">Código de Catedrático</label>
-                <div class="input-field">
-                    <i class="fas fa-user"></i> 
-                    <input type="text" id="codigo" name="codigo" placeholder="Ingrese su código" required>
+        <form class="login-form" action="#" method="POST" autocomplete="off">
+                
+                <div class="input-group">
+                    <label for="codigo">Código de Catedrático</label>
+                    <div class="input-field">
+                        <i class="fas fa-user"></i> 
+                        <input type="text" id="codigo" name="codigo" placeholder="Ingrese su código" required autocomplete="off">
+                    </div>
                 </div>
-            </div>
 
-            <div class="input-group">
-                <label for="password">Contraseña</label>
-                <div class="input-field">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="password" name="password" placeholder="Ingrese su contraseña" required>
+                <div class="input-group">
+                    <label for="password">Contraseña</label>
+                    <div class="input-field">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" placeholder="Ingrese su contraseña" required autocomplete="new-password">
+                    </div>
                 </div>
-            </div>
+           
+
+            <p id="mensaje-error" class="error-message"></p>
 
             <button type="submit" class="btn-primary">
                 Iniciar Sesión

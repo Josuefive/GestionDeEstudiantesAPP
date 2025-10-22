@@ -1,0 +1,5 @@
+# Ignorar dependencias de Node
+node_modules/
+
+# Ignorar el servidor con la contraseña real
+server.js

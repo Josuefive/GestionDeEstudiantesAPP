@@ -136,3 +136,20 @@ button {
     background-color: #f0f0f0;
     color: #333;
 }
+
+/* --- Estilo para el mensaje de error --- */
+.error-message {
+    color: #a94442; /* Rojo oscuro para el texto */
+    background-color: #f2dede; /* Fondo rojo pálido */
+    border: 1px solid #ebccd1; /* Borde rojo */
+    border-radius: 8px; /* Mismos bordes que los inputs */
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 10px; /* Espacio antes del botón */
+    
+
+    display: none; /* <-- ¡AÑADE ESTA LÍNEA! */
+    /* Por defecto estará vacío, pero si quieres ocultarlo: */
+    /* display: none; */ 
+}
