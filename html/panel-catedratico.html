@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel del Catedrático - Sistema de Gestión Académica</title>
-    <link rel="stylesheet" href="/css/paginas/estilo-califaciones.css">
+    <!-- Asegúrate que esta ruta a tu CSS sea correcta -->
+    <link rel="stylesheet" href="../css/paginas/estilo-califaciones.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
@@ -29,20 +30,17 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="anio-lectivo">Año Lectivo</label>
+                        <!-- ¡LIMPIADO! El JS los llenará -->
                         <select id="anio-lectivo">
-                            <option value="">Seleccione el año</option>
-                            <option value="2024">2024</option>
-                            <option value="2023">2023</option>
-                            <option value="2022">2022</option>
+                            <option value="">Cargando años...</option>
                         </select>
                     </div>
                     
                     <div class="form-group">
                         <label for="semestre">Semestre</label>
+                        <!-- ¡LIMPIADO! El JS los llenará -->
                         <select id="semestre">
-                            <option value="">Seleccione el semestre</option>
-                            <option value="1">Primer Semestre</option>
-                            <option value="2">Segundo Semestre</option>
+                            <option value="">Cargando semestres...</option>
                         </select>
                     </div>
                 </div>
@@ -66,7 +64,8 @@
                 <p>Seleccione la clase que desea gestionar.</p>
                 
                 <div class="clase-lista-container" id="clases-container">
-                    </div>
+                    <!-- El JS llenará esto -->
+                </div>
 
                 <div class="action-buttons" style="margin-top: 1.5rem;">
                     <button class="btn-primary" id="btn-gestionar" onclick="procederGestionar()" disabled>
@@ -75,10 +74,13 @@
                 </div>
             </section>
 
-            </main>
+        </main>
     </div>
 
-    <script src="/js/datos-clases.js"></script>
+    <!-- ¡ELIMINADO! Ya no necesitamos datos-clases.js -->
+    <!-- <script src="/js/datos-clases.js"></script> --> 
+    
+    <!-- Asegúrate que esta ruta a tu JS sea correcta -->
     <script src="/js/panel-catedratico.js"></script>
 </body>
 </html>

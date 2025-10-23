@@ -13,13 +13,12 @@ app.use(cors()); // Habilita CORS para todas las rutas
 app.use(express.json()); // Permite al servidor entender JSON
 
 // --- Configuración de la Base de Datos ---
-// ¡¡¡CAMBIA ESTOS DATOS POR LOS TUYOS!!!
 const pool = new Pool({
-  user: 'postgres',                 // <-- TU USUARIO DE POSTGRES (comúnmente 'postgres')
+  user: 'postgres',                 
   host: 'localhost',
-  database: 'sistema_academico',    // El nombre de tu BD (está correcto)
-  password: '',  // <-- TU CONTRASEÑA DE POSTGRES
-  port: 5432,                       // Puerto por defecto de Postgres
+  database: 'sistema_academico',    
+  password: '', //pon aqui tu contraseña de postgreSQL
+  port: 5432,                       
 });
 
 // --- Rutas (Endpoints) ---
@@ -28,24 +27,17 @@ const pool = new Pool({
 app.post('/login-estudiante', async (req, res) => {
   try {
     const { carnet, password } = req.body;
-
-    // 1. Buscar al estudiante por carnet
     const query = 'SELECT * FROM Estudiantes WHERE carnet = $1';
     const result = await pool.query(query, [carnet]);
-
     const estudiante = result.rows[0];
 
-    // 2. Si el estudiante no existe
     if (!estudiante) {
       return res.status(401).json({ success: false, message: 'Carnet o contraseña incorrectos.' });
     }
 
-    // 3. Comparar la contraseña enviada con la guardada (hasheada)
     const passwordValida = await bcrypt.compare(password, estudiante.password);
 
     if (passwordValida) {
-      // ¡Login exitoso!
-      // No envíes la contraseña de vuelta, solo los datos necesarios
       res.status(200).json({ 
         success: true, 
         message: 'Login exitoso', 
@@ -53,38 +45,29 @@ app.post('/login-estudiante', async (req, res) => {
         carnet: estudiante.carnet 
       });
     } else {
-      // Contraseña incorrecta
       res.status(401).json({ success: false, message: 'Carnet o contraseña incorrectos.' });
     }
-
   } catch (error) {
     console.error('Error en /login-estudiante:', error);
     res.status(500).json({ success: false, message: 'Error interno del servidor.' });
   }
 });
 
-// === AQUÍ ESTÁ EL ENDPOINT DE CATEDRÁTICOS COMPLETO ===
+// Endpoint para el login de CATEDRÁTICOS
 app.post('/login-catedratico', async (req, res) => {
   try {
     const { codigo, password } = req.body;
-
-    // 1. Buscar al catedrático por código
     const query = 'SELECT * FROM Catedraticos WHERE codigo = $1';
     const result = await pool.query(query, [codigo]);
-
     const catedratico = result.rows[0];
 
-    // 2. Si no existe
     if (!catedratico) {
       return res.status(401).json({ success: false, message: 'Código o contraseña incorrectos.' });
     }
 
-    // 3. Comparar la contraseña
     const passwordValida = await bcrypt.compare(password, catedratico.password);
 
     if (passwordValida) {
-      // ¡Login exitoso!
-      // Enviamos un objeto 'catedratico' para guardarlo en localStorage
       res.status(200).json({ 
         success: true, 
         message: 'Login exitoso', 
@@ -94,10 +77,8 @@ app.post('/login-catedratico', async (req, res) => {
         }
       });
     } else {
-      // Contraseña incorrecta
       res.status(401).json({ success: false, message: 'Código o contraseña incorrectos.' });
     }
-
   } catch (error) {
     console.error('Error en /login-catedratico:', error);
     res.status(500).json({ success: false, message: 'Error interno del servidor.' });
@@ -105,7 +86,238 @@ app.post('/login-catedratico', async (req, res) => {
 });
 
 
+// === ENDPOINT 2: PARA CARGAR LOS SELECTS DEL PANEL ===
+app.get('/api/periodos', async (req, res) => {
+  try {
+    const aniosQuery = 'SELECT DISTINCT anio FROM Periodos ORDER BY anio DESC';
+    const semestresQuery = 'SELECT DISTINCT semestre FROM Periodos ORDER BY semestre ASC';
+
+    const aniosResult = await pool.query(aniosQuery);
+    const semestresResult = await pool.query(semestresQuery);
+
+    res.status(200).json({
+      success: true,
+      anios: aniosResult.rows.map(row => row.anio),
+      semestres: semestresResult.rows.map(row => row.semestre)
+    });
+  } catch (error) {
+    console.error('Error en /api/periodos:', error);
+    res.status(500).json({ success: false, message: 'Error interno del servidor.' });
+  }
+});
+
+
+// === ENDPOINT 3: PARA EL BOTÓN "BUSCAR CLASES" ===
+app.get('/api/clases', async (req, res) => {
+  try {
+    const { periodo, catedratico } = req.query;
+
+    if (!periodo || !catedratico) {
+      return res.status(400).json({ success: false, message: 'Faltan parámetros (periodo o catedratico).' });
+    }
+
+    const query = 'SELECT * FROM Clases WHERE periodo_id = $1 AND catedratico_codigo = $2';
+    
+    const result = await pool.query(query, [periodo, catedratico]);
+
+    res.status(200).json({
+      success: true,
+      clases: result.rows 
+    });
+
+  } catch (error) {
+    console.error('Error en /api/clases:', error);
+    res.status(500).json({ success: false, message: 'Error interno del servidor.' });
+  }
+});
+
+// === ENDPOINT 4: PARA CARGAR ESTUDIANTES EN LA PÁGINA DE NOTAS ===
+app.get('/api/inscripciones', async (req, res) => {
+  try {
+    const { claseId } = req.query;
+
+    if (!claseId) {
+      return res.status(400).json({ success: false, message: 'Falta el ID de la clase.' });
+    }
+
+    const query = `
+      SELECT 
+        e.carnet, 
+        e.nombre, 
+        i.sistematico1, 
+        i.sistematico2, 
+        i.sistematico3, 
+        i.sistematico4, 
+        i.examen_final 
+      FROM Inscripciones i
+      JOIN estudiantes e ON i.estudiante_carnet = e.carnet
+      WHERE i.clase_id = $1;
+    `;
+    
+    const result = await pool.query(query, [claseId]);
+
+    res.status(200).json({
+      success: true,
+      estudiantes: result.rows 
+    });
+
+  } catch (error) {
+    console.error('Error en /api/inscripciones:', error);
+    res.status(500).json({ success: false, message: 'Error interno del servidor.' });
+  }
+});
+
+// === ENDPOINT 5: PARA GUARDAR LAS CALIFICACIONES ===
+app.post('/api/calificaciones', async (req, res) => {
+  try {
+    const { claseId, notas } = req.body; 
+
+    if (!claseId || !notas || !Array.isArray(notas)) {
+      return res.status(400).json({ success: false, message: 'Datos incompletos.' });
+    }
+
+    for (const est of notas) {
+      const query = `
+        UPDATE Inscripciones
+        SET 
+          sistematico1 = $1, 
+          sistematico2 = $2, 
+          sistematico3 = $3, 
+          sistematico4 = $4, 
+          examen_final = $5
+        WHERE 
+          estudiante_carnet = $6 AND clase_id = $7;
+      `;
+      await pool.query(query, [
+        est.s1, 
+        est.s2, 
+        est.s3, 
+        est.s4, 
+        est.ex, 
+        est.carnet, 
+        claseId
+      ]);
+    }
+
+    res.status(200).json({ success: true, message: 'Calificaciones guardadas exitosamente.' });
+
+  } catch (error) {
+    console.error('Error en /api/calificaciones:', error);
+    res.status(500).json({ success: false, message: 'Error al guardar las notas.' });
+  }
+});
+
+
+
+// === ENDPOINT 6: MEJORADO PARA EL PANEL DE ESTUDIANTE ===
+app.get('/api/calificaciones/estudiante', async (req, res) => {
+  try {
+    const { carnet } = req.query;
+
+    if (!carnet) {
+      return res.status(400).json({ success: false, message: 'Falta el carnet del estudiante.' });
+    }
+
+    // --- 1. Obtener Info Personal del Estudiante ---
+    const estudianteQuery = 'SELECT nombre, carnet, carrera, ingreso, estado FROM estudiantes WHERE carnet = $1';
+    const estudianteResult = await pool.query(estudianteQuery, [carnet]);
+
+    if (estudianteResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Estudiante no encontrado.' });
+    }
+    const estudianteInfo = estudianteResult.rows[0];
+
+    // --- 2. Obtener Lista de Clases y Notas ---
+    const clasesQuery = `
+      SELECT 
+        c.id AS codigo,
+        c.nombre AS asignatura,
+        cat.nombre AS catedratico,
+        c.horario,
+        i.sistematico1,
+        i.sistematico2,
+        i.sistematico3,
+        i.sistematico4,
+        i.examen_final
+      FROM Inscripciones i
+      JOIN Clases c ON i.clase_id = c.id
+      JOIN Catedraticos cat ON c.catedratico_codigo = cat.codigo
+      WHERE i.estudiante_carnet = $1;
+    `;
+    const clasesResult = await pool.query(clasesQuery, [carnet]);
+    const materias = clasesResult.rows;
+
+    // --- 3. Calcular Métricas ---
+    let inscritas = materias.length;
+    let aprobadas = 0;
+    let sumaPromedio = 0;
+    let materiasConNotaFinal = 0;
+
+    const materiasProcesadas = materias.map(m => {
+      const s1 = m.sistematico1 || 0;
+      const s2 = m.sistematico2 || 0;
+      const s3 = m.sistematico3 || 0;
+      const s4 = m.sistematico4 || 0;
+      const ex = m.examen_final || 0;
+      const total = s1 + s2 + s3 + s4 + ex;
+
+      let estado = 'En Curso';
+      let notasCompletas = (m.sistematico1 !== null && m.sistematico2 !== null && m.sistematico3 !== null && m.sistematico4 !== null && m.examen_final !== null);
+      
+      if (notasCompletas || total > 0) { // Asumimos que si hay nota, ya no está "en curso"
+          if (total >= 60) {
+              estado = 'Aprobado';
+              aprobadas++;
+          } else {
+              estado = 'Reprobado';
+          }
+          sumaPromedio += total;
+          materiasConNotaFinal++;
+      }
+      
+      return {
+          codigo: m.codigo,
+          asignatura: m.asignatura,
+          catedratico: m.catedratico,
+          horario: m.horario,
+          // Devolvemos la estructura de "notas" que tu JS anterior esperaba
+          notas: [
+              { tipo: 'Sist. 1', puntaje: m.sistematico1, max: 15 },
+              { tipo: 'Sist. 2', puntaje: m.sistematico2, max: 15 },
+              { tipo: 'Sist. 3', puntaje: m.sistematico3, max: 15 },
+              { tipo: 'Sist. 4', puntaje: m.sistematico4, max: 15 },
+              { tipo: 'Examen', puntaje: m.examen_final, max: 40 }
+          ],
+          total: (notasCompletas || total > 0) ? total : null,
+          estado: estado
+      };
+    });
+
+    const promedio = (materiasConNotaFinal > 0) ? (sumaPromedio / materiasConNotaFinal).toFixed(1) : 0;
+    const tasa = (inscritas > 0) ? ((aprobadas / inscritas) * 100).toFixed(0) : 0;
+
+    // --- 4. Enviar Respuesta Completa ---
+    res.status(200).json({
+      success: true,
+      // Info Personal y Métricas
+      ...estudianteInfo, // nombre, carnet, carrera, ingreso, estado
+      metricas: {
+        inscritas: inscritas,
+        aprobadas: aprobadas,
+        promedio: parseFloat(promedio),
+        tasa: parseInt(tasa)
+      },
+      // Lista de materias
+      materias: materiasProcesadas
+    });
+
+  } catch (error) {
+    console.error('Error en /api/calificaciones/estudiante:', error);
+    res.status(500).json({ success: false, message: 'Error interno del servidor.' });
+  }
+});
 // --- Iniciar el servidor ---
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
 });
+

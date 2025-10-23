@@ -4,29 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Estudiantil</title>
-    <link rel="stylesheet" href="/css/paginas/panel-estudiante.css">
+    <!-- Asegúrate de enlazar el CSS correcto -->
+    <link rel="stylesheet" href="/css/paginas/panel-estudiante.css"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="dashboard-container">
+    <!-- Contenedor principal -->
+    <div class="dashboard-container"> 
         
-        <header class="navbar">
-            <div class="navbar-right">
-                <div class="user-info">
-                    <i class="fas fa-user-circle"></i>
-                    <span>Cargando...</span>
-                    <span class="carnet">Carnet: ...</span>
-                </div>
-                <button class="logout-btn">
+        <!-- Header Unificado -->
+        <header class="dashboard-header"> 
+            <div class="header-info"> 
+                <h1>Universidad Nacional</h1> 
+                <h2>Sistema de Gestión Académica</h2>
+            </div>
+            <div class="user-info"> 
+                <span id="nombre-estudiante">Cargando...</span> 
+                <span id="carnet-estudiante">Carnet: ...</span> 
+                <button class="logout-btn"> 
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Cerrar Sesión</span>
                 </button>
             </div>
         </header>
 
-        <main class="content-area">
+        <!-- Área de Contenido Principal -->
+        <main class="content-area"> 
             
             <section class="info-personal-card">
+                <!-- ... (info personal) ... -->
                 <div class="info-item">
                     <span class="label">Estudiante</span>
                     <span class="value name">Cargando...</span>
@@ -47,7 +53,8 @@
             </section> 
 
             <section class="metrics-grid">
-                <div class="metric-card" data-tipo="inscritas">
+                <!-- ... (métricas) ... -->
+                 <div class="metric-card" data-tipo="inscritas">
                     <div class="metric-icon">
                         <i class="fas fa-book-reader"></i>
                         <span>-</span>
@@ -78,25 +85,26 @@
             </section>
 
             <section class="grades-section">
-                <div class="grades-table-container">
+                 <div class="grades-table-container">
                     <table class="grades-table">
                         <thead>
-                            </thead>
+                           <!-- JS Rellena esto -->
+                        </thead>
                         <tbody>
-                            <tr><td colspan="10">Cargando calificaciones...</td></tr>
+                            <tr><td colspan="10" style="text-align: center; padding: 2rem;">Cargando calificaciones...</td></tr>
                         </tbody>
                     </table>
                 </div>
 
                 <div class="grades-cards-container">
-                    <p>Cargando calificaciones...</p>
+                    <p style="text-align: center; padding: 2rem;">Cargando calificaciones...</p>
                 </div>
             </section>
 
-        </main>
-    </div>
+        </main> <!-- Cierre de content-area -->
+    </div> <!-- Cierre de dashboard-container -->
 
     <script src="/js/panel-estudiante.js"></script>
-    <script src="/js/datos.js"></script>
 </body>
 </html>
+

@@ -1,22 +1,16 @@
 // js/login-estudiante.js
 document.addEventListener('DOMContentLoaded', () => {
   
-  // Asegúrate que tu <form> en HTML tenga id="login-form-estudiante"
   const loginForm = document.querySelector('.login-form'); 
-  
-  // Añade un <p id="mensaje-error"></p> vacío en tu HTML
   const mensajeError = document.getElementById('mensaje-error'); 
 
   if (loginForm) {
     loginForm.addEventListener('submit', async (event) => {
-      // 1. Evita que el formulario se envíe solo
       event.preventDefault();
 
-      // 2. Obtén los valores
       const carnet = document.getElementById('carnet').value;
       const password = document.getElementById('password').value;
 
-      // 3. Envía la petición (fetch) a tu backend
       try {
         const response = await fetch('http://localhost:3000/login-estudiante', {
           method: 'POST',
@@ -31,24 +25,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const data = await response.json();
 
-        if (response.ok) { // Si el servidor dice "200 OK"
-          // ¡Éxito!
-          localStorage.setItem('nombreEstudiante', data.nombre); // Guarda el nombre
+        if (response.ok) {
+          // --- ¡ESTA ES LA CORRECCIÓN! ---
+          // Guardamos un objeto con nombre y carnet
+          const estudiante = {
+              nombre: data.nombre,
+              carnet: data.carnet
+          };
+          localStorage.setItem('estudianteLogueado', JSON.stringify(estudiante));
+          
           window.location.href = '/html/panel-Estudiante.html'; // Redirige
 
        } else {
-          // 5. Muestra error del servidor
           if (mensajeError) {
             mensajeError.textContent = data.message;
-            mensajeError.style.display = 'block'; // <-- ¡AÑADE ESTA LÍNEA!
+            mensajeError.style.display = 'block';
           }
         }
 
       } catch (error) {
-        // ...
+        console.error('Error de conexión:', error);
         if (mensajeError) {
           mensajeError.textContent = 'Error de conexión con el servidor.';
-          mensajeError.style.display = 'block'; // <-- ¡AÑADE ESTA LÍNEA!
+          mensajeError.style.display = 'block';
         }
       }
     });

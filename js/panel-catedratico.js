@@ -1,15 +1,14 @@
-// js/panel-catedratico.js
-
-// (El script 'datos-clases.js' debe cargarse ANTES que este)
+// URL de tu backend
+const API_URL = 'http://localhost:3000';
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Cargar datos del catedrático
+    // Cargar datos del catedrático (esto se queda igual)
     cargarDatosCatedratico();
     
-    // Cargar período guardado si existe
-    cargarPeriodoGuardado();
+    // ¡NUEVO! Cargar los selects desde la base de datos
+    cargarSelectsDePeriodo();
     
-    // Agregar estilos para animaciones
+    // (El resto de tu código de estilos se queda igual)
     const style = document.createElement('style');
     style.textContent = `
         @keyframes slideInRight {
@@ -24,49 +23,91 @@ document.addEventListener('DOMContentLoaded', function() {
     document.head.appendChild(style);
 });
 
-// Carga los datos del profesor en el header
+// Carga los datos del profesor en el header (SIN CAMBIOS)
 function cargarDatosCatedratico() {
     const catedratico = JSON.parse(localStorage.getItem('catedraticoLogueado'));
     if (catedratico) {
         document.getElementById('nombre-profesor').textContent = catedratico.nombre;
         document.getElementById('codigo-profesor').textContent = `Código: ${catedratico.codigo}`;
     } else {
-        // Si no hay sesión, lo regresa al login
-        window.location.href = '/html/login-catedratico.html';
+        // Asegúrate que esta ruta sea correcta
+        window.location.href = 'login-catedratico.html'; 
     }
 }
 
-// Cierra la sesión
+// Cierra la sesión (ACTUALIZADO para no usar confirm())
 function logout() {
-    if(confirm("¿Está seguro que desea cerrar sesión?")) {
+    mostrarMensaje('¿Está seguro que desea cerrar sesión?', 'confirm', () => {
         localStorage.removeItem('catedraticoLogueado');
         localStorage.removeItem('periodoSeleccionado');
         localStorage.removeItem('claseSeleccionada');
-        window.location.href = "/html/login-catedratico.html"; // Ir a login, no al index
+        // Asegúrate que esta ruta sea correcta
+        window.location.href = "login-catedratico.html"; 
+    });
+}
+
+// --- ¡NUEVA FUNCIÓN! ---
+// Carga los <select> de año y semestre desde la BD
+async function cargarSelectsDePeriodo() {
+    try {
+        const response = await fetch(`${API_URL}/api/periodos`);
+        if (!response.ok) {
+            throw new Error('No se pudo cargar la información de los períodos.');
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            const anioSelect = document.getElementById('anio-lectivo');
+            const semestreSelect = document.getElementById('semestre');
+            
+            // Limpiar selects (dejar solo la opción por defecto)
+            anioSelect.innerHTML = '<option value="">Seleccione el año</option>';
+            semestreSelect.innerHTML = '<option value="">Seleccione el semestre</option>';
+            
+            // Llenar Años
+            data.anios.forEach(anio => {
+                const option = document.createElement('option');
+                option.value = anio;
+                option.textContent = anio;
+                anioSelect.appendChild(option);
+            });
+            
+            // Llenar Semestres
+            data.semestres.forEach(semestre => {
+                const option = document.createElement('option');
+                option.value = semestre;
+                option.textContent = (semestre == 1) ? 'Primer Semestre' : 'Segundo Semestre';
+                semestreSelect.appendChild(option);
+            });
+
+            // Cargar período guardado (si existe)
+            cargarPeriodoGuardado();
+        } else {
+            throw new Error(data.message);
+        }
+    } catch (error) {
+        console.error('Error cargando períodos:', error);
+        mostrarMensaje(error.message, 'error');
     }
 }
 
-// Si el usuario ya había seleccionado un período, lo carga
+
+// Carga el período guardado (SIN CAMBIOS)
 function cargarPeriodoGuardado() {
     const periodo = localStorage.getItem('periodoSeleccionado');
     if (periodo) {
         const [anio, semestre] = periodo.split('-');
         document.getElementById('anio-lectivo').value = anio;
         document.getElementById('semestre').value = semestre;
-        // Opcional: buscar clases automáticamente al cargar la página
-        // buscarClases(); 
     }
 }
 
 // =============================================
-// NUEVA LÓGICA DE FILTRADO Y SELECCIÓN DE CLASE
+// LÓGICA DE FILTRADO DE CLASE (¡ACTUALIZADA!)
 // =============================================
 
-/**
- * Paso 1: Llamado por el botón "Buscar Clases".
- * Filtra las clases por profesor y período.
- */
-function buscarClases() {
+async function buscarClases() {
     const anio = document.getElementById('anio-lectivo').value;
     const semestre = document.getElementById('semestre').value;
     const catedratico = JSON.parse(localStorage.getItem('catedraticoLogueado'));
@@ -84,26 +125,29 @@ function buscarClases() {
     const periodoSeleccionado = `${anio}-${semestre}`;
     localStorage.setItem('periodoSeleccionado', periodoSeleccionado);
     
-    // Filtrar la base de datos global 'todasLasClases'
-    const clasesFiltradas = todasLasClases.filter(clase => {
-        return clase.periodo === periodoSeleccionado && clase.profesorId === catedratico.codigo;
-    });
-
-    // Llamar a la función para mostrar las clases en el HTML
-    mostrarClasesEncontradas(clasesFiltradas);
+    // --- ¡NUEVA LÓGICA DE FETCH! ---
+    try {
+        const response = await fetch(`${API_URL}/api/clases?periodo=${periodoSeleccionado}&catedratico=${catedratico.codigo}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            mostrarClasesEncontradas(data.clases);
+        } else {
+            throw new Error(data.message);
+        }
+    } catch (error) {
+        console.error('Error buscando clases:', error);
+        mostrarMensaje(error.message, 'error');
+    }
 }
 
-/**
- * Paso 2: Construye el HTML para la lista de clases.
- */
 function mostrarClasesEncontradas(clases) {
     const seccionLista = document.getElementById('lista-clases-section');
     const container = document.getElementById('clases-container');
     const btnGestionar = document.getElementById('btn-gestionar');
 
-    // Limpiar resultados anteriores
     container.innerHTML = '';
-    localStorage.removeItem('claseSeleccionada'); // Limpiar selección anterior
+    localStorage.removeItem('claseSeleccionada');
     btnGestionar.disabled = true;
 
     if (clases.length === 0) {
@@ -112,57 +156,59 @@ function mostrarClasesEncontradas(clases) {
         return;
     }
 
-    // Crear una tarjeta de radio por cada clase
     clases.forEach(clase => {
         const card = document.createElement('label');
         card.className = 'clase-radio-card';
-        // Usamos JSON.stringify para guardar el objeto *entero* en el value
+        
         card.innerHTML = `
             <input type="radio" name="clase-seleccionada" value='${JSON.stringify(clase)}'>
             <h4>${clase.nombre}</h4>
+            <p><strong>ID:</strong> ${clase.id}</p>
             <p><strong>Carrera:</strong> ${clase.carrera}</p>
             <p><strong>Horario:</strong> ${clase.horario}</p>
-            <p><strong>Estudiantes:</strong> ${clase.estudiantes}</p>
         `;
         
-        // Añadir el listener para guardar la selección
         card.querySelector('input').addEventListener('change', function() {
             if (this.checked) {
-                // Guardar el objeto COMPLETO de la clase
                 localStorage.setItem('claseSeleccionada', this.value); 
-                btnGestionar.disabled = false; // Activar el botón de gestionar
+                btnGestionar.disabled = false;
             }
         });
 
         container.appendChild(card);
     });
 
-    // Mostrar la sección de la lista
     seccionLista.style.display = 'block';
     seccionLista.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-
-/**
- * Paso 3: Llamado por el botón "Gestionar Calificaciones".
- * Redirige a la página de registro.
- */
 function procederGestionar() {
     const claseSeleccionada = localStorage.getItem('claseSeleccionada');
     
     if (claseSeleccionada) {
-        window.location.href = '/html/registroDecalificaciones.html';
+        // Asegúrate que esta ruta sea correcta
+        window.location.href = 'registroDecalificaciones.html'; 
     } else {
         mostrarMensaje('Por favor seleccione una clase de la lista', 'error');
     }
 }
 
 
-// Función para mostrar mensajes (sin cambios)
-function mostrarMensaje(mensaje, tipo) {
+/**
+ * Función para mostrar mensajes (ACTUALIZADA para no usar alert/confirm)
+ * tipo = 'exito', 'error', o 'confirm'
+ */
+function mostrarMensaje(mensaje, tipo, callbackConfirm) {
+    // Remover cualquier mensaje existente
+    const mensajeViejo = document.getElementById('mensaje-flotante');
+    if (mensajeViejo) mensajeViejo.remove();
+
     const mensajeDiv = document.createElement('div');
+    mensajeDiv.id = 'mensaje-flotante';
     mensajeDiv.className = `mensaje-flotante mensaje-${tipo}`;
     mensajeDiv.textContent = mensaje;
+    
+    // Estilos base
     mensajeDiv.style.cssText = `
         position: fixed;
         top: 20px;
@@ -173,24 +219,56 @@ function mostrarMensaje(mensaje, tipo) {
         z-index: 1000;
         animation: slideInRight 0.3s ease-out;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
     `;
     
     if (tipo === 'exito') {
         mensajeDiv.style.background = '#D1FAE5';
         mensajeDiv.style.color = '#065F46';
         mensajeDiv.style.border = '1px solid #A7F3D0';
-    } else {
+    } else if (tipo === 'error') {
         mensajeDiv.style.background = '#FEE2E2';
         mensajeDiv.style.color = '#991B1B';
         mensajeDiv.style.border = '1px solid #FECACA';
+    } else { // 'confirm'
+        mensajeDiv.style.background = '#FEF3C7';
+        mensajeDiv.style.color = '#92400E';
+        mensajeDiv.style.border = '1px solid #FDE68A';
+        
+        const btnSi = document.createElement('button');
+        btnSi.textContent = 'Sí';
+        btnSi.style.cssText = 'background: #92400E; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer;';
+        btnSi.onclick = () => {
+            mensajeDiv.remove();
+            if (callbackConfirm) callbackConfirm();
+        };
+        
+        const btnNo = document.createElement('button');
+        btnNo.textContent = 'No';
+        btnNo.style.cssText = 'background: transparent; color: #92400E; border: 1px solid #92400E; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer;';
+        btnNo.onclick = () => mensajeDiv.remove();
+        
+        const btnWrapper = document.createElement('div');
+        btnWrapper.style.display = 'flex';
+        btnWrapper.style.gap = '0.5rem';
+        btnWrapper.appendChild(btnSi);
+        btnWrapper.appendChild(btnNo);
+        mensajeDiv.appendChild(btnWrapper);
     }
     
     document.body.appendChild(mensajeDiv);
     
-    setTimeout(() => {
-        if (mensajeDiv.parentNode) {
-            mensajeDiv.style.animation = 'slideOutRight 0.3s ease-in';
-            setTimeout(() => mensajeDiv.remove(), 300);
-        }
-    }, 4000);
+    // Autocerrar solo si NO es confirmación
+    if (tipo !== 'confirm') {
+        setTimeout(() => {
+            if (mensajeDiv.parentNode) {
+                mensajeDiv.style.animation = 'slideOutRight 0.3s ease-in';
+                setTimeout(() => mensajeDiv.remove(), 300);
+            }
+        }, 4000);
+    }
 }
+
