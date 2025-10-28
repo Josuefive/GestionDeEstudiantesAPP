@@ -29,14 +29,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await response.json();
 
         if (response.ok) {
-          // Guarda los datos del catedrático
+
           localStorage.setItem('catedraticoLogueado', JSON.stringify(data.catedratico));
           window.location.href = '/html/panel-catedratico.html';
       } else {
-          // 5. Muestra error del servidor
+
           if (mensajeError) {
             mensajeError.textContent = data.message;
-            mensajeError.style.display = 'block'; // <-- ¡AÑADE ESTA LÍNEA!
+            mensajeError.style.display = 'block'; 
           }
         }
 
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // ...
         if (mensajeError) {
           mensajeError.textContent = 'Error de conexión con el servidor.';
-          mensajeError.style.display = 'block'; // <-- ¡AÑADE ESTA LÍNEA!
+          mensajeError.style.display = 'block'; 
         }
       }
     });

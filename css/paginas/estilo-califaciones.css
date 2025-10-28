@@ -406,7 +406,7 @@ body {
     }
 }
 
-/* ===== MEJORAS DE ACCESIBILIDAD ===== */
+
 @media (prefers-reduced-motion: reduce) {
     .btn-primary:hover,
     .periodo-section:hover,
@@ -458,20 +458,12 @@ body {
     -webkit-backdrop-filter: blur(20px);
 }
 
-/* ===== TIPOGRAFÍA MEJORADA ===== */
 body {
     font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
-
-
-
-/* ============================================= */
-/* ESTILOS PARA LA NUEVA LISTA DE CLASES         */
-/* (Añadir al final de estilo-califaciones.css)  */
-/* ============================================= */
 
 .lista-clases-section {
     background: var(--surface-color);

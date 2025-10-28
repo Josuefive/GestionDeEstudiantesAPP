@@ -50,7 +50,7 @@ header {
   width: 300px;
   height: auto;
   object-fit: contain;
-  border-radius: 20px; /* o quítalo si no quieres borde */
+  border-radius: 20px; 
   background-color: transparent;
   padding: 0;
   box-shadow: none;

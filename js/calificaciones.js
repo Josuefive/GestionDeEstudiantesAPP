@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
     cargarInfoCatedratico(catedratico);
     cargarInfoClase(clase);
     
-    // --- ¡LÓGICA ACTUALIZADA! ---
     // Ya no pasamos el ID, llamamos a la función asíncrona
     cargarEstudiantes(); 
 });
@@ -34,7 +33,6 @@ function cargarInfoCatedratico(catedratico) {
 }
 
 function cargarInfoClase(clase) {
-    // (Esta es tu función original, solo la muevo aquí)
     const grid = document.querySelector('.clase-info-detalle .info-grid');
     grid.innerHTML = `
         <div class="info-item-detalle">
@@ -57,7 +55,7 @@ function cargarInfoClase(clase) {
 }
 
 
-// --- ¡FUNCIÓN TOTALMENTE ACTUALIZADA! ---
+
 async function cargarEstudiantes() {
     if (!claseGlobal) return;
 
@@ -172,8 +170,6 @@ async function cargarEstudiantes() {
         tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 2rem;">${error.message}</td></tr>`;
     }
 }
-
-// --- ¡FUNCIÓN SIN CAMBIOS! ---
 function calcularFila(fila) {
     const inputs = fila.querySelectorAll('.nota-input');
     const totalCell = fila.querySelector('.total-cell');
@@ -208,7 +204,7 @@ function calcularFila(fila) {
     actualizarEstadisticas();
 }
 
-// --- ¡FUNCIÓN SIN CAMBIOS! ---
+
 function calcularTarjeta(card) {
     const inputs = card.querySelectorAll('.nota-input');
     const estadoCell = card.querySelector('.estado-cell'); 
@@ -240,7 +236,7 @@ function calcularTarjeta(card) {
     actualizarEstadisticas();
 }
 
-// --- ¡FUNCIÓN SIN CAMBIOS! ---
+
 function actualizarEstadisticas() {
     let filas = document.querySelectorAll('.calificaciones-table tbody tr');
     let selector = '.calificaciones-table .estado-cell';
@@ -274,7 +270,7 @@ function actualizarEstadisticas() {
     document.getElementById('stat-pendientes').textContent = pendientes;
 }
 
-// --- ¡FUNCIÓN ACTUALIZADA! ---
+
 async function guardarCalificaciones() {
     const btnGuardar = document.querySelector('.btn-primary');
     btnGuardar.textContent = 'Guardando...';
@@ -332,7 +328,7 @@ async function guardarCalificaciones() {
     }
 }
 
-// --- ¡NUEVA FUNCIÓN AUXILIAR! ---
+
 // Sincroniza las tarjetas móviles con lo que se guardó desde la tabla
 function sincronizarTarjetasConTabla(notasGuardadas) {
     notasGuardadas.forEach(est => {
@@ -363,7 +359,6 @@ function logout() {
     });
 }
 
-// --- ¡NUEVA FUNCIÓN DE MENSAJES! ---
 // (Reemplaza alert y confirm)
 function mostrarMensaje(mensaje, tipo, callbackConfirm) {
     const mensajeViejo = document.getElementById('mensaje-flotante');

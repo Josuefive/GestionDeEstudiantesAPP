@@ -140,5 +140,5 @@ button {
     font-weight: 500;
     margin-bottom: 10px;
 
-    display: none; /* <-- ¡AÑADE ESTA LÍNEA! */
+    display: none; 
 }

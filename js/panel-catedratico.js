@@ -2,13 +2,11 @@
 const API_URL = 'http://localhost:3000';
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Cargar datos del catedrático (esto se queda igual)
+    
     cargarDatosCatedratico();
     
-    // ¡NUEVO! Cargar los selects desde la base de datos
     cargarSelectsDePeriodo();
-    
-    // (El resto de tu código de estilos se queda igual)
+
     const style = document.createElement('style');
     style.textContent = `
         @keyframes slideInRight {
@@ -23,19 +21,19 @@ document.addEventListener('DOMContentLoaded', function() {
     document.head.appendChild(style);
 });
 
-// Carga los datos del profesor en el header (SIN CAMBIOS)
+// Carga los datos del profesor en el header 
 function cargarDatosCatedratico() {
     const catedratico = JSON.parse(localStorage.getItem('catedraticoLogueado'));
     if (catedratico) {
         document.getElementById('nombre-profesor').textContent = catedratico.nombre;
         document.getElementById('codigo-profesor').textContent = `Código: ${catedratico.codigo}`;
     } else {
-        // Asegúrate que esta ruta sea correcta
+
         window.location.href = 'login-catedratico.html'; 
     }
 }
 
-// Cierra la sesión (ACTUALIZADO para no usar confirm())
+// Cierra la sesión 
 function logout() {
     mostrarMensaje('¿Está seguro que desea cerrar sesión?', 'confirm', () => {
         localStorage.removeItem('catedraticoLogueado');
@@ -46,7 +44,7 @@ function logout() {
     });
 }
 
-// --- ¡NUEVA FUNCIÓN! ---
+
 // Carga los <select> de año y semestre desde la BD
 async function cargarSelectsDePeriodo() {
     try {
@@ -93,7 +91,7 @@ async function cargarSelectsDePeriodo() {
 }
 
 
-// Carga el período guardado (SIN CAMBIOS)
+// Carga el período guardado 
 function cargarPeriodoGuardado() {
     const periodo = localStorage.getItem('periodoSeleccionado');
     if (periodo) {
@@ -102,10 +100,6 @@ function cargarPeriodoGuardado() {
         document.getElementById('semestre').value = semestre;
     }
 }
-
-// =============================================
-// LÓGICA DE FILTRADO DE CLASE (¡ACTUALIZADA!)
-// =============================================
 
 async function buscarClases() {
     const anio = document.getElementById('anio-lectivo').value;

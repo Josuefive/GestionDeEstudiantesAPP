@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await response.json();
 
         if (response.ok) {
-          // --- ¡ESTA ES LA CORRECCIÓN! ---
           // Guardamos un objeto con nombre y carnet
           const estudiante = {
               nombre: data.nombre,
