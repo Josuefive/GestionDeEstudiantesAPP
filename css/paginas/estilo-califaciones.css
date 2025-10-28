@@ -542,3 +542,78 @@ body {
     color: var(--text-primary);
     font-weight: 500;
 }
+
+/* ===== ESTILOS AÑADIDOS para Panel Catedrático (Pégalos al final) ===== */
+
+/* Botón secundario (para "Ver Semestres Anteriores") */
+.btn-secondary {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.btn-secondary:hover {
+    background: var(--background-color);
+    border-color: var(--text-secondary);
+}
+
+.btn-secondary i {
+    margin-right: 0.5rem;
+}
+
+/* Nueva sección para mostrar el periodo actual */
+.periodo-actual-section {
+    background: var(--surface-color);
+    padding: 1.5rem 2rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Para responsive */
+    gap: 1rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.periodo-actual-section:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.periodo-info h3 {
+    color: var(--secondary-color); /* Verde */
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.periodo-info p {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    margin-top: 0.25rem;
+}
+
+/* Responsivo para la nueva sección */
+@media (max-width: 600px) {
+    .periodo-actual-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+    
+    .periodo-actual-section .btn-secondary {
+        width: 100%;
+        text-align: center;
+    }
+}

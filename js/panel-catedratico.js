@@ -5,8 +5,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     cargarDatosCatedratico();
     
-    cargarSelectsDePeriodo();
+    inicializarPanel();
 
+    // (El código de animación de 'mostrarMensaje' se queda igual)
     const style = document.createElement('style');
     style.textContent = `
         @keyframes slideInRight {
@@ -21,86 +22,114 @@ document.addEventListener('DOMContentLoaded', function() {
     document.head.appendChild(style);
 });
 
-// Carga los datos del profesor en el header 
+// Carga los datos del profesor en el header (Sin cambios)
 function cargarDatosCatedratico() {
     const catedratico = JSON.parse(localStorage.getItem('catedraticoLogueado'));
     if (catedratico) {
         document.getElementById('nombre-profesor').textContent = catedratico.nombre;
         document.getElementById('codigo-profesor').textContent = `Código: ${catedratico.codigo}`;
     } else {
-
         window.location.href = 'login-catedratico.html'; 
     }
 }
 
-// Cierra la sesión 
+// Cierra la sesión (Sin cambios)
 function logout() {
     mostrarMensaje('¿Está seguro que desea cerrar sesión?', 'confirm', () => {
         localStorage.removeItem('catedraticoLogueado');
         localStorage.removeItem('periodoSeleccionado');
         localStorage.removeItem('claseSeleccionada');
-        // Asegúrate que esta ruta sea correcta
         window.location.href = "login-catedratico.html"; 
     });
 }
 
 
-// Carga los <select> de año y semestre desde la BD
-async function cargarSelectsDePeriodo() {
+// Se ejecuta al cargar la página. Obtiene el periodo actual y carga todo.
+async function inicializarPanel() {
     try {
-        const response = await fetch(`${API_URL}/api/periodos`);
-        if (!response.ok) {
-            throw new Error('No se pudo cargar la información de los períodos.');
+        const catedratico = JSON.parse(localStorage.getItem('catedraticoLogueado'));
+        if (!catedratico || !catedratico.codigo) {
+            mostrarMensaje('Error de autenticación.', 'error');
+            return;
         }
+
+        // 1. Obtener los periodos disponibles
+        const response = await fetch(`${API_URL}/api/periodos`);
+        if (!response.ok) throw new Error('No se pudo cargar la información de los períodos.');
         
         const data = await response.json();
-        
-        if (data.success) {
-            const anioSelect = document.getElementById('anio-lectivo');
-            const semestreSelect = document.getElementById('semestre');
-            
-            // Limpiar selects (dejar solo la opción por defecto)
-            anioSelect.innerHTML = '<option value="">Seleccione el año</option>';
-            semestreSelect.innerHTML = '<option value="">Seleccione el semestre</option>';
-            
-            // Llenar Años
-            data.anios.forEach(anio => {
-                const option = document.createElement('option');
-                option.value = anio;
-                option.textContent = anio;
-                anioSelect.appendChild(option);
-            });
-            
-            // Llenar Semestres
-            data.semestres.forEach(semestre => {
-                const option = document.createElement('option');
-                option.value = semestre;
-                option.textContent = (semestre == 1) ? 'Primer Semestre' : 'Segundo Semestre';
-                semestreSelect.appendChild(option);
-            });
+        if (!data.success) throw new Error(data.message);
 
-            // Cargar período guardado (si existe)
-            cargarPeriodoGuardado();
-        } else {
-            throw new Error(data.message);
-        }
+        // 2. Llenar los dropdowns (para la búsqueda antigua)
+        llenarSelectsDePeriodo(data.anios, data.semestres);
+
+        // 3. Determinar el periodo actual (el más reciente)
+        const anioActual = data.anios[0]; // anios viene en DESC
+        const semestreActual = data.semestres[data.semestres.length - 1]; // semestres en ASC
+        const periodoActualString = `${anioActual}-${semestreActual}`;
+
+        // 4. Mostrar el periodo actual en la UI
+        document.getElementById('periodo-actual-display').textContent = `Año ${anioActual} - ${semestreActual == 1 ? 'Primer' : 'Segundo'} Semestre`;
+        
+        // 5. Cargar clases del periodo actual
+        await cargarClasesPeriodoActual(periodoActualString, catedratico.codigo);
+
     } catch (error) {
-        console.error('Error cargando períodos:', error);
+        console.error('Error inicializando panel:', error);
         mostrarMensaje(error.message, 'error');
     }
 }
 
-
-// Carga el período guardado 
-function cargarPeriodoGuardado() {
-    const periodo = localStorage.getItem('periodoSeleccionado');
-    if (periodo) {
-        const [anio, semestre] = periodo.split('-');
-        document.getElementById('anio-lectivo').value = anio;
-        document.getElementById('semestre').value = semestre;
+async function cargarClasesPeriodoActual(periodo, codigoCatedratico) {
+    try {
+        const response = await fetch(`${API_URL}/api/clases?periodo=${periodo}&catedratico=${codigoCatedratico}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            mostrarClasesEncontradas(data.clases, 'actual'); // 'actual' es el nuevo tipo
+        } else {
+            throw new Error(data.message);
+        }
+    } catch (error) {
+        console.error('Error cargando clases actuales:', error);
+        mostrarMensaje(error.message, 'error');
+        document.getElementById('clases-container').innerHTML = '<p>Error al cargar las clases.</p>';
     }
 }
-
+function llenarSelectsDePeriodo(anios, semestres) {
+    const anioSelect = document.getElementById('anio-lectivo');
+    const semestreSelect = document.getElementById('semestre');
+    
+    anioSelect.innerHTML = '<option value="">Seleccione el año</option>';
+    semestreSelect.innerHTML = '<option value="">Seleccione el semestre</option>';
+    
+    anios.forEach(anio => {
+        const option = document.createElement('option');
+        option.value = anio;
+        option.textContent = anio;
+        anioSelect.appendChild(option);
+    });
+    
+    semestres.forEach(semestre => {
+        const option = document.createElement('option');
+        option.value = semestre;
+        option.textContent = (semestre == 1) ? 'Primer Semestre' : 'Segundo Semestre';
+        semestreSelect.appendChild(option);
+    });
+}
+function toggleBusquedaAntigua() {
+    const wrapper = document.getElementById('selector-antiguo-wrapper');
+    const btn = document.getElementById('btn-ver-anteriores');
+    
+    if (wrapper.style.display === 'none') {
+        wrapper.style.display = 'block';
+        btn.innerHTML = '<i class="fas fa-eye-slash"></i> Ocultar Buscador';
+        wrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+        wrapper.style.display = 'none';
+        btn.innerHTML = '<i class="fas fa-calendar-alt"></i> Ver Semestres Anteriores';
+    }
+}
 async function buscarClases() {
     const anio = document.getElementById('anio-lectivo').value;
     const semestre = document.getElementById('semestre').value;
@@ -117,15 +146,14 @@ async function buscarClases() {
     }
 
     const periodoSeleccionado = `${anio}-${semestre}`;
-    localStorage.setItem('periodoSeleccionado', periodoSeleccionado);
+    // No guardamos esto en localStorage, para no confundirlo con el periodo actual
     
-    // --- ¡NUEVA LÓGICA DE FETCH! ---
     try {
         const response = await fetch(`${API_URL}/api/clases?periodo=${periodoSeleccionado}&catedratico=${catedratico.codigo}`);
         const data = await response.json();
         
         if (data.success) {
-            mostrarClasesEncontradas(data.clases);
+            mostrarClasesEncontradas(data.clases, 'busqueda'); // 'busqueda' es el nuevo tipo
         } else {
             throw new Error(data.message);
         }
@@ -135,17 +163,30 @@ async function buscarClases() {
     }
 }
 
-function mostrarClasesEncontradas(clases) {
+// MODIFICADA: Acepta un 'tipo' para cambiar el título
+function mostrarClasesEncontradas(clases, tipo = 'actual') {
     const seccionLista = document.getElementById('lista-clases-section');
     const container = document.getElementById('clases-container');
     const btnGestionar = document.getElementById('btn-gestionar');
+    const titulo = document.getElementById('lista-clases-titulo');
+
+    // Actualizar título
+    if (tipo === 'actual') {
+        titulo.textContent = 'Mis Clases (Periodo Actual)';
+    } else {
+        titulo.textContent = 'Resultados de la Búsqueda';
+    }
 
     container.innerHTML = '';
     localStorage.removeItem('claseSeleccionada');
     btnGestionar.disabled = true;
 
     if (clases.length === 0) {
-        container.innerHTML = '<p>No se encontraron clases asignadas para usted en este período.</p>';
+        if (tipo === 'actual') {
+            container.innerHTML = '<p>No tiene clases asignadas para el periodo actual.</p>';
+        } else {
+            container.innerHTML = '<p>No se encontraron clases asignadas para usted en este período.</p>';
+        }
         seccionLista.style.display = 'block';
         return;
     }
@@ -173,27 +214,25 @@ function mostrarClasesEncontradas(clases) {
     });
 
     seccionLista.style.display = 'block';
-    seccionLista.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // No hacemos scroll automático, solo si es una búsqueda
+    if (tipo === 'busqueda') {
+        seccionLista.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
 
+// Sin cambios
 function procederGestionar() {
     const claseSeleccionada = localStorage.getItem('claseSeleccionada');
     
     if (claseSeleccionada) {
-        // Asegúrate que esta ruta sea correcta
         window.location.href = 'registroDecalificaciones.html'; 
     } else {
         mostrarMensaje('Por favor seleccione una clase de la lista', 'error');
     }
 }
 
-
-/**
- * Función para mostrar mensajes (ACTUALIZADA para no usar alert/confirm)
- * tipo = 'exito', 'error', o 'confirm'
- */
+// Sin cambios
 function mostrarMensaje(mensaje, tipo, callbackConfirm) {
-    // Remover cualquier mensaje existente
     const mensajeViejo = document.getElementById('mensaje-flotante');
     if (mensajeViejo) mensajeViejo.remove();
 
@@ -202,7 +241,6 @@ function mostrarMensaje(mensaje, tipo, callbackConfirm) {
     mensajeDiv.className = `mensaje-flotante mensaje-${tipo}`;
     mensajeDiv.textContent = mensaje;
     
-    // Estilos base
     mensajeDiv.style.cssText = `
         position: fixed;
         top: 20px;
@@ -255,7 +293,6 @@ function mostrarMensaje(mensaje, tipo, callbackConfirm) {
     
     document.body.appendChild(mensajeDiv);
     
-    // Autocerrar solo si NO es confirmación
     if (tipo !== 'confirm') {
         setTimeout(() => {
             if (mensajeDiv.parentNode) {
@@ -265,4 +302,3 @@ function mostrarMensaje(mensaje, tipo, callbackConfirm) {
         }, 4000);
     }
 }
-

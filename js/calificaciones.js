@@ -1,4 +1,4 @@
-// URL de tu backend
+// URL del backend
 const API_URL = 'http://localhost:3000';
 
 let claseGlobal = null; // Para guardar la clase actual
@@ -18,9 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     cargarInfoCatedratico(catedratico);
-    cargarInfoClase(clase);
-    
-    // Ya no pasamos el ID, llamamos a la función asíncrona
+    cargarInfoClase(clase); 
     cargarEstudiantes(); 
 });
 
@@ -34,33 +32,33 @@ function cargarInfoCatedratico(catedratico) {
 
 function cargarInfoClase(clase) {
     const grid = document.querySelector('.clase-info-detalle .info-grid');
+    
     grid.innerHTML = `
         <div class="info-item-detalle">
             <strong>Clase:</strong>
-            <span>${clase.nombre} (ID: ${clase.id})</span>
+            <span>${clase.nombre || 'No disponible'}</span>
         </div>
         <div class="info-item-detalle">
             <strong>Carrera:</strong>
-            <span>${clase.carrera}</span>
+            <span>${clase.carrera || 'No disponible'}</span>
         </div>
         <div class="info-item-detalle">
             <strong>Horario:</strong>
-            <span>${clase.horario}</span>
+            <span>${clase.horario || 'No disponible'}</span>
         </div>
         <div class="info-item-detalle">
             <strong>Período:</strong>
-            <span>${clase.periodo_id}</span>
+            <span>${clase.periodo_id || 'No disponible'}</span>
         </div>
     `;
 }
 
-
-
 async function cargarEstudiantes() {
     if (!claseGlobal) return;
+    const tbody = document.querySelector('.calificaciones-table tbody');
+    const cardsContainer = document.querySelector('.calificaciones-cards-container');
 
     try {
-        // 1. Hacemos fetch al nuevo endpoint
         const response = await fetch(`${API_URL}/api/inscripciones?claseId=${claseGlobal.id}`);
         const data = await response.json();
 
@@ -70,23 +68,17 @@ async function cargarEstudiantes() {
         
         const listaEstudiantes = data.estudiantes || [];
     
-        const tbody = document.querySelector('.calificaciones-table tbody');
-        const cardsContainer = document.querySelector('.calificaciones-cards-container');
-        
         tbody.innerHTML = ''; 
         cardsContainer.innerHTML = ''; 
 
         document.getElementById('stat-total').textContent = listaEstudiantes.length;
         
         if (listaEstudiantes.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 2rem;">No hay estudiantes inscritos en esta clase.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding 2rem;">No hay estudiantes inscritos en esta clase.</td></tr>';
             return;
         }
 
-        // 2. Crear AMBAS estructuras para cada estudiante
         listaEstudiantes.forEach(est => {
-            // 3. ¡Rellenamos los inputs con los valores de la BD!
-            //    (Usamos '|| ""' para mostrar vacío en lugar de 'null')
             const s1 = est.sistematico1 || "";
             const s2 = est.sistematico2 || "";
             const s3 = est.sistematico3 || "";
@@ -95,7 +87,6 @@ async function cargarEstudiantes() {
 
             // --- 1. Crear Fila de Tabla ---
             const tr = document.createElement('tr');
-            // Guardamos el carnet en el 'dataset' para saber a quién guardar
             tr.dataset.carnet = est.carnet; 
             tr.innerHTML = `
                 <td>${est.carnet}</td>
@@ -113,7 +104,7 @@ async function cargarEstudiantes() {
                 input.addEventListener('input', () => calcularFila(tr));
             });
             tbody.appendChild(tr);
-            calcularFila(tr); // Calcular el estado inicial
+            calcularFila(tr);
 
             // --- 2. Crear Tarjeta de Estudiante ---
             const card = document.createElement('div');
@@ -161,7 +152,7 @@ async function cargarEstudiantes() {
                 input.addEventListener('input', () => calcularTarjeta(card));
             });
             cardsContainer.appendChild(card);
-            calcularTarjeta(card); // Calcular el estado inicial
+            calcularTarjeta(card);
         });
 
     } catch (error) {
@@ -285,8 +276,7 @@ async function guardarCalificaciones() {
         
         const inputs = fila.querySelectorAll('.nota-input');
         
-        // Convertir '' o null a 0 para la BD
-        const parseNota = (input) => parseFloat(input.value) || 0;
+        const parseNota = (input) => (input.value === '') ? null : parseFloat(input.value);
         
         notasParaGuardar.push({
             carnet: carnet,
@@ -313,7 +303,6 @@ async function guardarCalificaciones() {
         const data = await response.json();
         if (data.success) {
             mostrarMensaje('¡Calificaciones guardadas exitosamente!', 'exito');
-            // Sincronizar tarjetas con la tabla (opcional pero buena idea)
             sincronizarTarjetasConTabla(notasParaGuardar);
         } else {
             throw new Error(data.message);
@@ -329,25 +318,174 @@ async function guardarCalificaciones() {
 }
 
 
-// Sincroniza las tarjetas móviles con lo que se guardó desde la tabla
 function sincronizarTarjetasConTabla(notasGuardadas) {
     notasGuardadas.forEach(est => {
         const card = document.querySelector(`.student-card[data-carnet="${est.carnet}"]`);
         if (card) {
             const inputs = card.querySelectorAll('.nota-input');
+            // Usamos '|| ""' para que el input quede vacío si el valor es null
             inputs[0].value = est.s1 || "";
             inputs[1].value = est.s2 || "";
             inputs[2].value = est.s3 || "";
             inputs[3].value = est.s4 || "";
             inputs[4].value = est.ex || "";
-            calcularTarjeta(card); // Recalcular estado de la tarjeta
+            calcularTarjeta(card);
         }
     });
 }
 
+function generarActaPDF() {
+    // Verificar que las librerías estén cargadas
+    if (typeof window.jspdf === 'undefined') {
+        mostrarMensaje('Error: La librería jsPDF no está disponible.', 'error');
+        return;
+    }
 
-function imprimirActa() {
-    window.print();
+    // !! Corrección clave: La librería se adjunta a window.jspdf.jsPDF
+    const { jsPDF } = window.jspdf;
+    
+    // !! Corrección clave: Así es como se debe revisar el plugin
+    if (typeof jsPDF.prototype.autoTable === 'undefined') {
+        mostrarMensaje('Error: El plugin AutoTable no está disponible.', 'error');
+        return;
+    }
+
+    // Crear documento
+    const doc = new jsPDF({ 
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+    });
+
+    // Información de la clase
+    if (!claseGlobal) {
+        mostrarMensaje('Error: No se pudo encontrar la información de la clase.', 'error');
+        return;
+    }
+
+    // Título y información
+    doc.setFontSize(16);
+    doc.text("ACTA DE CALIFICACIONES", 14, 20);
+    
+    doc.setFontSize(10);
+    doc.text(`Clase: ${claseGlobal.nombre || 'No disponible'}`, 14, 30); 
+    doc.text(`Código: ${claseGlobal.id || 'No disponible'}`, 14, 36);
+    doc.text(`Catedrático: ${document.querySelectorAll('.user-info span')[0]?.textContent || 'No disponible'}`, 14, 42);
+    doc.text(`Periodo: ${claseGlobal.periodo_id || 'No disponible'}`, 14, 48);
+    doc.text(`Fecha: ${new Date().toLocaleString()}`, 14, 54);
+
+    // Encabezados de la tabla
+    const headers = [
+        "Carnet", 
+        "Nombre del Estudiante", 
+        "S1", 
+        "S2", 
+        "S3", 
+        "S4", 
+        "ExF", 
+        "Total", 
+        "Estado"
+    ];
+
+    // Datos de la tabla
+    const tableData = [];
+    const filas = document.querySelectorAll('.calificaciones-table tbody tr');
+    
+    filas.forEach(fila => {
+        if (fila.dataset.carnet && fila.style.display !== 'none') {
+            const carnet = fila.dataset.carnet;
+            const nombre = fila.querySelector('td:nth-child(2)')?.textContent || '';
+            const inputs = fila.querySelectorAll('.nota-input');
+            
+            const s1 = inputs[0]?.value || '-';
+            const s2 = inputs[1]?.value || '-';
+            const s3 = inputs[2]?.value || '-';
+            const s4 = inputs[3]?.value || '-';
+            const ex = inputs[4]?.value || '-';
+            
+            const total = fila.querySelector('.total-cell')?.textContent || '0';
+            const estado = fila.querySelector('.estado-cell')?.textContent || 'Pendiente';
+
+            tableData.push([carnet, nombre, s1, s2, s3, s4, ex, total, estado]);
+        }
+    });
+
+    if (tableData.length === 0) {
+        mostrarMensaje('No hay estudiantes (visibles) para generar el acta.', 'error');
+        return;
+    }
+
+    // Generar tabla
+    doc.autoTable({
+        startY: 60,
+        head: [headers],
+        body: tableData,
+        theme: 'grid',
+        styles: {
+            fontSize: 8,
+            cellPadding: 3
+        },
+        headStyles: {
+            fillColor: [41, 128, 185],
+            textColor: 255,
+            fontStyle: 'bold'
+        },
+        columnStyles: {
+            0: { cellWidth: 20 }, // Carnet
+            1: { cellWidth: 45 }, // Nombre
+            2: { cellWidth: 12 }, // S1
+            3: { cellWidth: 12 }, // S2
+            4: { cellWidth: 12 }, // S3
+            5: { cellWidth: 12 }, // S4
+            6: { cellWidth: 15 }, // ExF
+            7: { cellWidth: 15 }, // Total
+            8: { cellWidth: 20 }  // Estado
+        },
+        margin: { top: 60 }
+    });
+
+    // Guardar PDF
+    const fileName = `acta_${(claseGlobal.nombre || 'clase').replace(/\s+/g, '_')}_${(claseGlobal.periodo_id || 'periodo')}.pdf`;
+    doc.save(fileName);
+    
+    mostrarMensaje('Acta generada exitosamente', 'exito');
+}
+
+function filtrarVistas() {
+    // 1. Obtener el texto a buscar (en mayúsculas para que no distinga)
+    const textoBuscador = document.getElementById('buscadorNombre').value.toUpperCase();
+    
+    // --- 2. Filtrar la VISTA DE TABLA ---
+    const filas = document.querySelectorAll('.calificaciones-table tbody tr');
+    
+    filas.forEach(fila => {
+        // Ignorar filas que no sean de estudiantes (ej. la de "cargando...")
+        if (!fila.dataset.carnet) return; 
+        
+        const carnet = (fila.dataset.carnet || '').toUpperCase();
+        const nombre = (fila.querySelector('td:nth-child(2)')?.textContent || '').toUpperCase();
+        
+        // 4. Comprobar si el texto está en el carnet O en el nombre
+        if (nombre.includes(textoBuscador) || carnet.includes(textoBuscador)) {
+            fila.style.display = ""; // "" restaura el display original (table-row)
+        } else {
+            fila.style.display = "none"; // Oculta la fila
+        }
+    });
+    
+    // --- 3. Filtrar la VISTA DE TARJETAS ---
+    const tarjetas = document.querySelectorAll('.calificaciones-cards-container .student-card');
+    
+    tarjetas.forEach(tarjeta => {
+        const carnet = (tarjeta.dataset.carnet || '').toUpperCase();
+        const nombre = (tarjeta.querySelector('.name')?.textContent || '').toUpperCase();
+        
+        if (nombre.includes(textoBuscador) || carnet.includes(textoBuscador)) {
+            tarjeta.style.display = ""; // "" restaura el display original (flex/block)
+        } else {
+            tarjeta.style.display = "none"; // Oculta la tarjeta
+        }
+    });
 }
 
 function logout() {
@@ -355,12 +493,14 @@ function logout() {
         localStorage.removeItem('catedraticoLogueado');
         localStorage.removeItem('claseSeleccionada');
         localStorage.removeItem('periodoSeleccionado');
-        window.location.href = 'panel-catedratico.html';
+        // Redirigir al login, no al panel
+        window.location.href = 'login-catedratico.html';
     });
 }
 
 // (Reemplaza alert y confirm)
 function mostrarMensaje(mensaje, tipo, callbackConfirm) {
+    // Remover cualquier mensaje existente
     const mensajeViejo = document.getElementById('mensaje-flotante');
     if (mensajeViejo) mensajeViejo.remove();
 
@@ -369,6 +509,7 @@ function mostrarMensaje(mensaje, tipo, callbackConfirm) {
     mensajeDiv.className = `mensaje-flotante mensaje-${tipo}`;
     mensajeDiv.textContent = mensaje;
     
+    // Estilos base
     mensajeDiv.style.cssText = `
         position: fixed;
         top: 20px;
@@ -421,6 +562,7 @@ function mostrarMensaje(mensaje, tipo, callbackConfirm) {
     
     document.body.appendChild(mensajeDiv);
     
+    // Autocerrar solo si NO es confirmación
     if (tipo !== 'confirm') {
         setTimeout(() => {
             if (mensajeDiv.parentNode) {

@@ -4,15 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Estudiantil</title>
-    <!-- Asegúrate de enlazar el CSS correcto -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <link rel="stylesheet" href="/css/paginas/panel-estudiante.css"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <!-- Contenedor principal -->
     <div class="dashboard-container"> 
         
-        <!-- Header Unificado -->
         <header class="dashboard-header"> 
             <div class="header-info"> 
                 <h1>Universidad Nacional</h1> 
@@ -28,11 +27,9 @@
             </div>
         </header>
 
-        <!-- Área de Contenido Principal -->
         <main class="content-area"> 
             
             <section class="info-personal-card">
-                <!-- ... (info personal) ... -->
                 <div class="info-item">
                     <span class="label">Estudiante</span>
                     <span class="value name">Cargando...</span>
@@ -53,7 +50,6 @@
             </section> 
 
             <section class="metrics-grid">
-                <!-- ... (métricas) ... -->
                  <div class="metric-card" data-tipo="inscritas">
                     <div class="metric-icon">
                         <i class="fas fa-book-reader"></i>
@@ -75,7 +71,14 @@
                     </div>
                     <div class="metric-text">Promedio General</div>
                 </div>
-                <div class="metric-card" data-tipo="tasa">
+                 <div class="metric-card" data-tipo="promedio-semestre">
+                    <div class="metric-icon blue">
+                        <i class="fas fa-tasks"></i>
+                        <span>-</span>
+                    </div>
+                    <div class="metric-text">Promedio del Semestre</div>
+                </div>
+                 <div class="metric-card" data-tipo="tasa">
                     <div class="metric-icon purple">
                         <i class="fas fa-chart-line"></i>
                         <span>-</span>
@@ -85,11 +88,26 @@
             </section>
 
             <section class="grades-section">
+                 
+                 <div class="section-header">
+                    <h2 class="section-title">Historial de Calificaciones</h2>
+                    
+                    <div class="header-actions"> 
+                        <div class="period-selector-wrapper">
+                            <select id="periodo-selector" class="period-selector">
+                                <option value="">Cargando periodos...</option>
+                            </select>
+                        </div>
+                         <button class="btn-primary-outline" id="btn-descargar-pdf">
+                            <i class="fas fa-file-pdf"></i> Descargar
+                        </button>
+                    </div>
+                </div>
+                 
                  <div class="grades-table-container">
                     <table class="grades-table">
                         <thead>
-                           <!-- JS Rellena esto -->
-                        </thead>
+                           </thead>
                         <tbody>
                             <tr><td colspan="10" style="text-align: center; padding: 2rem;">Cargando calificaciones...</td></tr>
                         </tbody>
@@ -100,11 +118,7 @@
                     <p style="text-align: center; padding: 2rem;">Cargando calificaciones...</p>
                 </div>
             </section>
-
-        </main> <!-- Cierre de content-area -->
-    </div> <!-- Cierre de dashboard-container -->
-
-    <script src="/js/panel-estudiante.js"></script>
+            
+            </main> </div> <script src="/js/panel-estudiante.js"></script>
 </body>
 </html>
-
