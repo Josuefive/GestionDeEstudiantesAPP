@@ -529,7 +529,7 @@ body {
     margin-bottom: 0.5rem;
     font-size: 1.1rem;
     font-weight: 600;
-    padding-right: 2rem; /* Espacio para el botón de radio */
+    padding-right: 2rem; 
 }
 
 .clase-radio-card p {
@@ -543,9 +543,6 @@ body {
     font-weight: 500;
 }
 
-/* ===== ESTILOS AÑADIDOS para Panel Catedrático (Pégalos al final) ===== */
-
-/* Botón secundario (para "Ver Semestres Anteriores") */
 .btn-secondary {
     background: transparent;
     color: var(--text-secondary);
@@ -568,7 +565,7 @@ body {
     margin-right: 0.5rem;
 }
 
-/* Nueva sección para mostrar el periodo actual */
+
 .periodo-actual-section {
     background: var(--surface-color);
     padding: 1.5rem 2rem;
@@ -578,7 +575,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap; /* Para responsive */
+    flex-wrap: wrap;
     gap: 1rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -589,7 +586,7 @@ body {
 }
 
 .periodo-info h3 {
-    color: var(--secondary-color); /* Verde */
+    color: var(--secondary-color); 
     font-size: 0.875rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -604,7 +601,6 @@ body {
     margin-top: 0.25rem;
 }
 
-/* Responsivo para la nueva sección */
 @media (max-width: 600px) {
     .periodo-actual-section {
         flex-direction: column;
