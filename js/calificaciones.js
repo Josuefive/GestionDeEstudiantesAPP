@@ -1,5 +1,5 @@
 // URL del backend
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://gyroidal-unblasphemed-phyllis.ngrok-free.dev';
 
 let claseGlobal = null; // Para guardar la clase actual
 
