@@ -1,4 +1,4 @@
-const API_URL = 'https://gyroidal-unblasphemed-phyllis.ngrok-free.dev'; 
+const API_URL = ''; 
 
 let datosEstudianteGlobal = {};
 let materiasPeriodoActual = [];

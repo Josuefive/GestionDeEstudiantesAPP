@@ -1,5 +1,5 @@
 // URL del backend
-const API_URL = 'https://gyroidal-unblasphemed-phyllis.ngrok-free.dev';
+const API_URL = '';
 
 let claseGlobal = null; // Para guardar la clase actual
 
@@ -267,28 +267,57 @@ async function guardarCalificaciones() {
     btnGuardar.textContent = 'Guardando...';
     btnGuardar.disabled = true;
     
-    const notasParaGuardar = [];
-    const filas = document.querySelectorAll('.calificaciones-table tbody tr');
+    // --- CORRECCIÓN #1 ---
+    // ¡Aquí declaramos el array!
+    const notasParaGuardar = []; 
     
-    filas.forEach(fila => {
-        const carnet = fila.dataset.carnet;
-        if (!carnet) return; // Omitir filas vacías
-        
-        const inputs = fila.querySelectorAll('.nota-input');
-        
-        const parseNota = (input) => (input.value === '') ? null : parseFloat(input.value);
-        
-        notasParaGuardar.push({
-            carnet: carnet,
-            s1: parseNota(inputs[0]),
-            s2: parseNota(inputs[1]),
-            s3: parseNota(inputs[2]),
-            s4: parseNota(inputs[3]),
-            ex: parseNota(inputs[4])
-        });
-    });
-
+    // Es mejor envolver *toda* la lógica en el try/catch
     try {
+        const cardsContainer = document.querySelector('.calificaciones-cards-container');
+        const esVistaDeTarjetas = window.getComputedStyle(cardsContainer).display === 'flex';
+
+        if (esVistaDeTarjetas) {
+            // 2. Leer desde las TARJETAS
+            const tarjetas = document.querySelectorAll('.student-card');
+            tarjetas.forEach(tarjeta => {
+                const carnet = tarjeta.dataset.carnet;
+                if (!carnet) return;
+                
+                const inputs = tarjeta.querySelectorAll('.nota-input');
+                const parseNota = (input) => (input.value === '') ? null : parseFloat(input.value);
+                
+                notasParaGuardar.push({ // Ahora sí funciona
+                    carnet: carnet,
+                    s1: parseNota(inputs[0]),
+                    s2: parseNota(inputs[1]),
+                    s3: parseNota(inputs[2]),
+                    s4: parseNota(inputs[3]),
+                    ex: parseNota(inputs[4])
+                });
+            });
+            
+        } else {
+            // 3. Leer desde la TABLA
+            const filas = document.querySelectorAll('.calificaciones-table tbody tr');
+            filas.forEach(fila => {
+                const carnet = fila.dataset.carnet;
+                if (!carnet) return;
+                
+                const inputs = fila.querySelectorAll('.nota-input');
+                const parseNota = (input) => (input.value === '') ? null : parseFloat(input.value);
+                
+                notasParaGuardar.push({ // Ahora sí funciona
+                    carnet: carnet,
+                    s1: parseNota(inputs[0]),
+                    s2: parseNota(inputs[1]),
+                    s3: parseNota(inputs[2]),
+                    s4: parseNota(inputs[3]),
+                    ex: parseNota(inputs[4])
+                });
+            });
+        }
+
+        // Ahora sí, enviamos la petición
         const response = await fetch(`${API_URL}/api/calificaciones`, {
             method: 'POST',
             headers: {
@@ -303,7 +332,11 @@ async function guardarCalificaciones() {
         const data = await response.json();
         if (data.success) {
             mostrarMensaje('¡Calificaciones guardadas exitosamente!', 'exito');
-            sincronizarTarjetasConTabla(notasParaGuardar);
+            
+            // --- CORRECCIÓN #2 ---
+            // Usar la función que SÍ existe en tu archivo
+            sincronizarVistas(notasParaGuardar);
+            
         } else {
             throw new Error(data.message);
         }
@@ -312,24 +345,40 @@ async function guardarCalificaciones() {
         console.error('Error al guardar:', error);
         mostrarMensaje(error.message, 'error');
     } finally {
+        // El 'finally' se ejecuta siempre (con éxito o error)
+        // Esto asegura que el botón NUNCA se quede pegado.
         btnGuardar.textContent = 'Guardar Calificaciones';
         btnGuardar.disabled = false;
     }
 }
 
 
-function sincronizarTarjetasConTabla(notasGuardadas) {
+function sincronizarVistas(notasGuardadas) {
     notasGuardadas.forEach(est => {
+        const valor = (v) => v === null ? "" : v; // Convierte null a string vacío
+
+        // 1. Sincronizar TABLA
+        const fila = document.querySelector(`.calificaciones-table tr[data-carnet="${est.carnet}"]`);
+        if (fila) {
+            const inputs = fila.querySelectorAll('.nota-input');
+            inputs[0].value = valor(est.s1);
+            inputs[1].value = valor(est.s2);
+            inputs[2].value = valor(est.s3);
+            inputs[3].value = valor(est.s4);
+            inputs[4].value = valor(est.ex);
+            calcularFila(fila); // Recalcular total y estado
+        }
+        
+        // 2. Sincronizar TARJETA
         const card = document.querySelector(`.student-card[data-carnet="${est.carnet}"]`);
         if (card) {
             const inputs = card.querySelectorAll('.nota-input');
-            // Usamos '|| ""' para que el input quede vacío si el valor es null
-            inputs[0].value = est.s1 || "";
-            inputs[1].value = est.s2 || "";
-            inputs[2].value = est.s3 || "";
-            inputs[3].value = est.s4 || "";
-            inputs[4].value = est.ex || "";
-            calcularTarjeta(card);
+            inputs[0].value = valor(est.s1);
+            inputs[1].value = valor(est.s2);
+            inputs[2].value = valor(est.s3);
+            inputs[3].value = valor(est.s4);
+            inputs[4].value = valor(est.ex);
+            calcularTarjeta(card); // Recalcular estado
         }
     });
 }

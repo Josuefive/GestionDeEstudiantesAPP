@@ -1,5 +1,5 @@
 // URL de tu backend
-const API_URL = 'https://gyroidal-unblasphemed-phyllis.ngrok-free.dev';
+const API_URL = '';
 
 document.addEventListener('DOMContentLoaded', function() {
     
