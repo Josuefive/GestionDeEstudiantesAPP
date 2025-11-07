@@ -1,23 +1,23 @@
-// --- Importar módulos ---
+
 const express = require('express');
-const { Pool } = require('pg'); // Driver de PostgreSQL
-const bcrypt = require('bcryptjs'); // Para hashear contraseñas
-const cors = require('cors'); // Para permitir peticiones
+const { Pool } = require('pg'); 
+const bcrypt = require('bcryptjs'); 
+const cors = require('cors'); 
+const path = require('path'); 
 
-// --- Configuración ---
 const app = express();
-const port = 3000; // Puedes usar cualquier puerto
+const port = 3000; 
 
-// --- Middlewares ---
-app.use(cors()); // Habilita CORS para todas las rutas
-app.use(express.json()); // Permite al servidor entender JSON
 
-// --- Configuración de la Base de Datos ---
+app.use(cors()); 
+app.use(express.json()); 
+
+
 const pool = new Pool({
   user: 'postgres',                 
   host: 'localhost',
   database: 'sistema_academico',    
-  password: '', //pon aqui tu contraseña de postgreSQL
+  password: '',
   port: 5432,                       
 });
 
@@ -209,10 +209,10 @@ app.post('/api/calificaciones', async (req, res) => {
 
 
 
-// === ENDPOINT 6: MEJORADO PARA EL PANEL DE ESTUDIANTE ===
+// === ENDPOINT 6:PANEL DE ESTUDIANTE ===
 app.get('/api/calificaciones/estudiante', async (req, res) => {
   try {
-    const { carnet } = req.query;
+    const { carnet, periodo } = req.query; // Recibimos 'periodo' opcional
 
     if (!carnet) {
       return res.status(400).json({ success: false, message: 'Falta el carnet del estudiante.' });
@@ -227,7 +227,70 @@ app.get('/api/calificaciones/estudiante', async (req, res) => {
     }
     const estudianteInfo = estudianteResult.rows[0];
 
-    // --- 2. Obtener Lista de Clases y Notas ---
+    // --- 2. Obtener TODOS los períodos disponibles para este estudiante (para el dropdown) ---
+    const periodosQuery = `
+      SELECT DISTINCT c.periodo_id
+      FROM Inscripciones i
+      JOIN Clases c ON i.clase_id = c.id
+      WHERE i.estudiante_carnet = $1
+      ORDER BY c.periodo_id DESC;
+    `;
+    const periodosResult = await pool.query(periodosQuery, [carnet]);
+    const periodosDisponibles = periodosResult.rows.map(row => row.periodo_id);
+
+    if (periodosDisponibles.length === 0) {
+        // Si no tiene inscripciones, devolvemos los datos básicos
+        return res.status(200).json({
+            success: true,
+            ...estudianteInfo,
+            periodos: [],
+            periodoActual: null,
+            metricas: { inscritas: 0, aprobadas: 0, promedio: 0, tasa: 0 },
+            materias: []
+        });
+    }
+
+    const periodoAConsultar = periodo || periodosDisponibles[0];
+
+    // --- 4. Obtener TODAS las materias de TODOS los tiempos (SÓLO para calcular métricas globales) ---
+    const allClasesQuery = `
+      SELECT i.sistematico1, i.sistematico2, i.sistematico3, i.sistematico4, i.examen_final
+      FROM Inscripciones i
+      JOIN Clases c ON i.clase_id = c.id
+      WHERE i.estudiante_carnet = $1;
+    `;
+    const allClasesResult = await pool.query(allClasesQuery, [carnet]);
+    const totalMaterias = allClasesResult.rows;
+    
+    // --- 5. Calcular Métricas Globales ---
+    let inscritas = totalMaterias.length;
+    let aprobadas = 0;
+    let sumaPromedio = 0;
+    let materiasConNotaFinal = 0;
+
+    totalMaterias.forEach(m => {
+        const s1 = m.sistematico1 || 0;
+        const s2 = m.sistematico2 || 0;
+        const s3 = m.sistematico3 || 0;
+        const s4 = m.sistematico4 || 0;
+        const ex = m.examen_final || 0;
+        const total = s1 + s2 + s3 + s4 + ex;
+        
+        let notasCompletas = (m.sistematico1 !== null && m.sistematico2 !== null && m.sistematico3 !== null && m.sistematico4 !== null && m.examen_final !== null);
+        
+        if (notasCompletas || total > 0) { 
+            if (total >= 60) {
+                aprobadas++;
+            }
+            sumaPromedio += total;
+            materiasConNotaFinal++;
+        }
+    });
+
+    const promedio = (materiasConNotaFinal > 0) ? (sumaPromedio / materiasConNotaFinal).toFixed(1) : 0;
+    const tasa = (inscritas > 0) ? ((aprobadas / inscritas) * 100).toFixed(0) : 0;
+    
+    // --- 6. Obtener Lista de Clases y Notas (SÓLO del período a consultar) ---
     const clasesQuery = `
       SELECT 
         c.id AS codigo,
@@ -242,37 +305,27 @@ app.get('/api/calificaciones/estudiante', async (req, res) => {
       FROM Inscripciones i
       JOIN Clases c ON i.clase_id = c.id
       JOIN Catedraticos cat ON c.catedratico_codigo = cat.codigo
-      WHERE i.estudiante_carnet = $1;
+      WHERE i.estudiante_carnet = $1 AND c.periodo_id = $2;
     `;
-    const clasesResult = await pool.query(clasesQuery, [carnet]);
-    const materias = clasesResult.rows;
+    const clasesResult = await pool.query(clasesQuery, [carnet, periodoAConsultar]);
+    const materiasDelPeriodo = clasesResult.rows;
 
-    // --- 3. Calcular Métricas ---
-    let inscritas = materias.length;
-    let aprobadas = 0;
-    let sumaPromedio = 0;
-    let materiasConNotaFinal = 0;
-
-    const materiasProcesadas = materias.map(m => {
-      const s1 = m.sistematico1 || 0;
-      const s2 = m.sistematico2 || 0;
-      const s3 = m.sistematico3 || 0;
-      const s4 = m.sistematico4 || 0;
-      const ex = m.examen_final || 0;
-      const total = s1 + s2 + s3 + s4 + ex;
-
-      let estado = 'En Curso';
-      let notasCompletas = (m.sistematico1 !== null && m.sistematico2 !== null && m.sistematico3 !== null && m.sistematico4 !== null && m.examen_final !== null);
+    // --- 7. Procesar las materias del período para enviarlas ---
+    const materiasProcesadas = materiasDelPeriodo.map(m => {
+      const s1 = m.sistematico1; // Mantenemos null si es null
+      const s2 = m.sistematico2;
+      const s3 = m.sistematico3;
+      const s4 = m.sistematico4;
+      const ex = m.examen_final;
       
-      if (notasCompletas || total > 0) { // Asumimos que si hay nota, ya no está "en curso"
-          if (total >= 60) {
-              estado = 'Aprobado';
-              aprobadas++;
-          } else {
-              estado = 'Reprobado';
-          }
-          sumaPromedio += total;
-          materiasConNotaFinal++;
+      // Calculamos total solo si todas las notas están puestas
+      let total = null;
+      let estado = 'En Curso';
+      let notasCompletas = (s1 !== null && s2 !== null && s3 !== null && s4 !== null && ex !== null);
+      
+      if (notasCompletas) {
+          total = (s1||0) + (s2||0) + (s3||0) + (s4||0) + (ex||0);
+          estado = (total >= 60) ? 'Aprobado' : 'Reprobado';
       }
       
       return {
@@ -280,35 +333,31 @@ app.get('/api/calificaciones/estudiante', async (req, res) => {
           asignatura: m.asignatura,
           catedratico: m.catedratico,
           horario: m.horario,
-          // Devolvemos la estructura de "notas" que tu JS anterior esperaba
           notas: [
-              { tipo: 'Sist. 1', puntaje: m.sistematico1, max: 15 },
-              { tipo: 'Sist. 2', puntaje: m.sistematico2, max: 15 },
-              { tipo: 'Sist. 3', puntaje: m.sistematico3, max: 15 },
-              { tipo: 'Sist. 4', puntaje: m.sistematico4, max: 15 },
-              { tipo: 'Examen', puntaje: m.examen_final, max: 40 }
+              { tipo: 'Sist. 1', puntaje: s1, max: 15 },
+              { tipo: 'Sist. 2', puntaje: s2, max: 15 },
+              { tipo: 'Sist. 3', puntaje: s3, max: 15 },
+              { tipo: 'Sist. 4', puntaje: s4, max: 15 },
+              { tipo: 'Examen', puntaje: ex, max: 40 }
           ],
-          total: (notasCompletas || total > 0) ? total : null,
+          total: total,
           estado: estado
       };
     });
 
-    const promedio = (materiasConNotaFinal > 0) ? (sumaPromedio / materiasConNotaFinal).toFixed(1) : 0;
-    const tasa = (inscritas > 0) ? ((aprobadas / inscritas) * 100).toFixed(0) : 0;
-
-    // --- 4. Enviar Respuesta Completa ---
+    // --- 8. Enviar Respuesta Completa ---
     res.status(200).json({
       success: true,
-      // Info Personal y Métricas
-      ...estudianteInfo, // nombre, carnet, carrera, ingreso, estado
+      ...estudianteInfo,
+      periodos: periodosDisponibles, 
+      periodoActual: periodoAConsultar, 
       metricas: {
         inscritas: inscritas,
         aprobadas: aprobadas,
         promedio: parseFloat(promedio),
         tasa: parseInt(tasa)
       },
-      // Lista de materias
-      materias: materiasProcesadas
+      materias: materiasProcesadas 
     });
 
   } catch (error) {
@@ -316,7 +365,24 @@ app.get('/api/calificaciones/estudiante', async (req, res) => {
     res.status(500).json({ success: false, message: 'Error interno del servidor.' });
   }
 });
-// --- Iniciar el servidor ---
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'html', 'index.html'));
+});
+
+
+app.use('/html', express.static(path.join(__dirname, 'html')));
+
+
+app.use('/css', express.static(path.join(__dirname, 'css')));
+
+
+app.use('/js', express.static(path.join(__dirname, 'js')));
+
+
+app.use('/img', express.static(path.join(__dirname, 'img')))
+
+
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
 });

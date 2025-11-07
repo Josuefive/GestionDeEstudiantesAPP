@@ -7,6 +7,18 @@ const passEstudiante2 = '12345678'
 const passProfe1 = 'admin123';
 const passProfe2 = 'profesor123';
 const passPrefe3 = 'pass123';
+const passAdmin = 'jsxadmin2025'
+
+
+
+
+bcrypt.hash(passAdmin, saltRounds, (err, hashAdmin) => {
+    if (err) throw err;
+    console.log("Hash para 'jsxadmin2025':");
+    console.log(hashAdmin);
+    console.log("\n");
+});
+
 
 // Hashear la contraseña de estudiante
 bcrypt.hash(passEstudiante, saltRounds, (err, hashEstudiante) => {
